@@ -1,0 +1,84 @@
+// Ishaan Dey
+// Feb 24 2023
+
+package assignment1;
+
+import java.io.*;
+
+public class Main {
+
+  public static void main(String[] args) throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    PrintWriter receipt = new PrintWriter(new FileWriter("receipt.txt"));
+    receipt.println("Here is a summary of your purchases:\n");
+    receipt.printf("%-32s%-11s%-11s%-11s%n", "ITEM", "QUANTITY", "UNIT COST", "TOTAL COST");
+    receipt.printf("%-32s%-11s%-11s%-11s%n", "----", "--------", "---------", "----------");
+
+    int item = 1;
+    double finalCost = 0;
+
+    double cheap = Integer.MAX_VALUE;
+    String cheapStr = "";
+
+    System.out.println("The WONG Toy Store");
+
+    while (item != -1) {
+      System.out.printf("\nPlease enter the name of toy #%d: ", item);
+      String toyName = br.readLine().trim();
+
+      int qty;
+      while (true) {
+        try {
+          System.out.print("How many of this toy are you buying?: ");
+          qty = Integer.parseInt(br.readLine());
+          break;
+        } catch (NumberFormatException e) {
+          System.out.println("Invalid integer. Try again.");
+        }
+      }
+
+      double cost;
+      while (true) {
+        try {
+          System.out.print("Please enter the cost of this toy: $");
+          cost = Double.parseDouble(br.readLine());
+          break;
+        } catch (NumberFormatException e) {
+          System.out.println("Invalid cost. Try again.");
+        }
+      }
+
+      double total = (Math.round(cost * 100) / 100.0) * qty;
+      System.out.printf("The cost for %d %s @ $%.2f each is: $%.2f%n", qty, toyName, cost, total);
+      receipt.printf("%-32s%-11d$%-10.2f$%-10.2f%n", toyName, qty, cost, total);
+
+      finalCost += total;
+
+      cheap = Math.min(cheap, total);
+      if (cheap == total) {
+        cheapStr = String.format("The cheapest toy bought is: %d %s for $%.2f!", qty, toyName, total);
+      }
+
+      String yn = "";
+      while (!yn.equalsIgnoreCase("y") && !yn.equalsIgnoreCase("n")) {
+        System.out.print("Are you buying any more toys (y/n): ");
+        yn = br.readLine();
+      }
+
+      if (yn.equalsIgnoreCase("y")) {
+        item++;
+      } else {
+        item = -1;
+      }
+    }
+
+    receipt.println("----------------------------------------------------------------");
+    receipt.printf("%-54s$%.2f%n%n", "FINAL COST", finalCost);
+    receipt.println(cheapStr);
+    receipt.close();
+
+    System.out.println("\nThank you for shopping at The WONG Toy Store!");
+    System.out.println("(Your receipt is saved in receipt.txt)");
+
+  }
+}
