@@ -1,0 +1,9 @@
+Here is a summary of your purchases:
+
+ITEM                            QUANTITY   UNIT COST  TOTAL COST 
+----                            --------   ---------  ---------- 
+pokemon                         0          $0.01      $0.00      
+----------------------------------------------------------------
+FINAL COST                                            $0.00
+
+The cheapest toy bought is: 0 pokemon for $0.00!

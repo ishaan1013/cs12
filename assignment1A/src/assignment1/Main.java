@@ -27,6 +27,7 @@ public class Main {
     // while loop to keep asking for more items
     while (item != -1) {
       // use methods to read toy name, qty, and cost
+      System.out.println("");
       String toyName = getItem(br, item);
       int qty = getQty(br);
       double cost = getCost(br);
@@ -68,8 +69,15 @@ public class Main {
   // takes in buffered reader to output prompt and int item to print the item number
   // returns input result (string)
   static String getItem(BufferedReader br, int item) throws IOException {
-    System.out.printf("\nPlease enter the name of toy #%d: ", item);
-    return br.readLine().trim();
+    while (true) {
+      System.out.printf("Please enter the name of toy #%d: ", item);
+      String in = br.readLine().trim();
+      if (in.length() > 0) {
+        return in;
+      } else {
+        System.out.println("Invalid input. Try again.");
+      }
+    }
   }
 
   // reads the quantity of the toy
@@ -79,9 +87,14 @@ public class Main {
     while (true) {
       try {
         System.out.print("How many of this toy are you buying?: ");
-        return Integer.parseInt(br.readLine());
+        int in = Integer.parseInt(br.readLine());
+        if (in >= 0) {
+          return in;
+        } else {
+          System.out.println("Invalid quantity (negative). Try again.");
+        }
       } catch (NumberFormatException e) {
-        System.out.println("Invalid integer. Try again.");
+        System.out.println("Invalid quantity. Try again.");
       }
     }
   }
@@ -93,7 +106,12 @@ public class Main {
     while (true) {
       try {
         System.out.print("Please enter the cost of this toy: $");
-        return Double.parseDouble(br.readLine());
+        double in = Double.parseDouble(br.readLine());
+        if (in >= 0) {
+          return in;
+        } else {
+          System.out.println("Invalid cost (negative). Try again.");
+        }
       } catch (NumberFormatException e) {
         System.out.println("Invalid cost. Try again.");
       }

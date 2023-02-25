@@ -9,7 +9,6 @@ import java.io.*;
 public class Main {
 
   public static void main(String[] args) throws IOException {
-
     String line = "";
     try {
       BufferedReader inFile = new BufferedReader(new FileReader("input.txt"));
@@ -18,7 +17,6 @@ public class Main {
         if (line.length() > 0) {
           int pos = 0, len = 0;
           int n = line.length();
-
           // iterate through each character and check if char on either side is equal
           // continue doing so until the characters are not equal
           // saves time by not checking substrings where we know a palindrome already exists
@@ -35,11 +33,9 @@ public class Main {
               }
             }
           }
-
           // do the same but for even length palindromes
           for (int i = 1; i < n - 1; i++) {
             if (line.charAt(i + 1) == line.charAt(i)) {
-
               int reach = Math.min(i, n - i - 2);
               for (int x = 1; x <= reach; x++) {
                 if (line.charAt(i - x) == line.charAt((i + 1) + x)) {
@@ -53,7 +49,6 @@ public class Main {
               }
             }
           }
-
           System.out.printf("Largest palindrome: %s%n", line.substring(pos, pos + len));
           System.out.printf("Starting position: %d%n", pos + 1);
           System.out.printf("Length: %d%n", len);
@@ -62,12 +57,10 @@ public class Main {
           System.out.println("Starting position: 0");
           System.out.println("Length: 0");
         }
-
       }
       inFile.close();
     } catch (FileNotFoundException e) {
       System.out.println("File does not exist");
     }
-
   }
 }
