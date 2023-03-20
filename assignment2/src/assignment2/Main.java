@@ -29,6 +29,7 @@ public class Main {
           String line = in.readLine();
           for (int j = 0; j < cols; j++) {
             grid[i][j] = line.charAt(j);
+            // save start position
             if (line.charAt(j) == 'W') {
               w[0] = i;
               w[1] = j;
