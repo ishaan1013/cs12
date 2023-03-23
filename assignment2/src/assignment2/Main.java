@@ -23,27 +23,21 @@ public class Main {
         cols = Integer.parseInt(in.readLine());
         char[][] grid = new char[rows][cols];
         boolean[][] visited = new boolean[rows][cols];
-        int[] w = new int[2];
 
         for (int i = 0; i < rows; i++) {
           String line = in.readLine();
           for (int j = 0; j < cols; j++) {
             grid[i][j] = line.charAt(j);
-            // save start position
-            if (line.charAt(j) == 'W') {
-              w[0] = i;
-              w[1] = j;
-            }
           }
         }
 
         if (rows <= 1 && cols <= 1)
           System.out.println("The house does not exist.");
         else {
-          String p = saveTheCat(grid, visited, w[0], w[1], "", "");
+          String p = saveTheCat(grid, visited, 0, 0, "", "");
           // path will be an empty string if the cat is never reached
           if (p.equals(""))
-            System.out.println("Suki is eternally trapped in the sink. 😐");
+            System.out.println("Suki is trapped in the sink.");
           else {
             System.out.println("Fastest # of steps: " + p.length());
             System.out.print("Direction:");
@@ -66,7 +60,7 @@ public class Main {
   // takes in the grid, visited array, current row, current column, current path, and fastest path so far
   // returns the fastest path, or an empty string if no path exists
   static String saveTheCat(char[][] grid, boolean[][] visited, int r, int c, String path, String fastest) {
-    if (r < 0 || r >= rows || c < 0 || c >= cols || visited[r][c] || grid[r][c] == 'X') {
+    if (r < 0 || r >= rows || c < 0 || c >= cols || visited[r][c] || grid[r][c] == 'X' || grid[r][c] == 'x') {
       return fastest;
     }
 
@@ -79,8 +73,7 @@ public class Main {
     }
 
     visited[r][c] = true;
-    // try all four directions
-    // fastest will only be changed if the current path is shorter than the fastest path, or if there is no fastest path yet (due to the previous conditional stuff)
+    // try all four directions, fastest will only be changed if the current path is shorter than the fastest path, or if there is no fastest path yet (due to the previous conditional stuff)
     fastest = saveTheCat(grid, visited, r + 1, c, path + "S", fastest);
     fastest = saveTheCat(grid, visited, r - 1, c, path + "N", fastest);
     fastest = saveTheCat(grid, visited, r, c + 1, path + "E", fastest);
