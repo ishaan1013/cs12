@@ -1,7 +1,9 @@
-91.1% ASuper Mario Animation
-80% CLess Super Mario Horror
-70% BLess Super Mario Action
-60% FLess Super Mario Comedy
-50% ELess Super Mario Horror
-40% DLess Super Mario Comedy
-Bad Example
+80% a a
+65% a A
+55% a a
+45% a A
+95% a d
+75% a b
+85% d b
+90% b b
+90% c b
