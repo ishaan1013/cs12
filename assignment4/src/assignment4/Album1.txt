@@ -1,0 +1,29 @@
+1
+05/24/2020
+20
+3
+Jigglypuff
+60
+Fairy
+06/12/2020
+2
+Double Slap – Flip 2 coins. This attack does 20damage times the number of heads.
+20x
+Rollout
+10
+Grimer
+80
+Psychic
+03/26/2020
+1
+Pound
+10
+Wigglytuff
+100
+Fairy
+02/01/2021
+2
+Expand – During your opponent's next turn, any damaage done to this Pokemon by attacks is reduced by 30.
+30
+Double Slap - Flip 2 coins. This attack does 60 damage times the number of heads.
+60x

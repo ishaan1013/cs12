@@ -10,18 +10,31 @@ public class Album {
   int hp;
   Date date;
 
-  void displayInfo(int num, Date date, int capacity, int cards, int hp) {}
+  public Album(int num, Date date, int capacity, ArrayList<Card> cards) {
+    this.num = num;
+    this.date = date;
+    this.capacity = capacity;
+    this.cards = cards;
+    this.hp = 0;
+  }
 
-  void displayCards(ArrayList<Card> cards) {}
+  void displayInfo(int num, Date date, int capacity, int cards, int hp) {
+  }
 
-  void addCard(int hp, String name, String type, Date date, ArrayList<Attack> attacks) {}
+  void displayCards(ArrayList<Card> cards) {
+  }
 
-  void remove(String type, String item) {}
+  void addCard(int hp, String name, String type, Date date, ArrayList<Attack> attacks) {
+  }
 
-  void edit(String name, String attack, String field, String value) {}
+  void remove(String type, String item) {
+  }
 
-  void sort(String type) {}
+  void edit(String name, String attack, String field, String value) {
+  }
 
+  void sort(String type) {
+  }
 
 
 }
