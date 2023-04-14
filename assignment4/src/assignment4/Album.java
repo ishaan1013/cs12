@@ -4,11 +4,31 @@ package assignment4;
 import java.util.*;
 
 public class Album {
-  int num;
-  int capacity;
-  ArrayList<Card> cards;
-  int hp;
-  Date date;
+  private int num;
+  private int capacity;
+  private ArrayList<Card> cards;
+  private int hp;
+  private Date date;
+
+  public int getNum() {
+    return num;
+  }
+
+  public int getCapacity() {
+    return capacity;
+  }
+
+  public ArrayList<Card> getCards() {
+    return cards;
+  }
+
+  public int getHp() {
+    return hp;
+  }
+
+  public Date getDate() {
+    return date;
+  }
 
   public Album(int num, Date date, int capacity, ArrayList<Card> cards) {
     this.num = num;
@@ -16,6 +36,10 @@ public class Album {
     this.capacity = capacity;
     this.cards = cards;
     this.hp = 0;
+
+    for (Card card : cards) {
+      this.hp += card.hp;
+    }
   }
 
   void displayInfo(int num, Date date, int capacity, int cards, int hp) {
