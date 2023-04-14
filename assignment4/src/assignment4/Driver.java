@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class Driver extends JPanel implements ActionListener {
 
@@ -14,26 +15,29 @@ public class Driver extends JPanel implements ActionListener {
   Color dark2 = new Color(55, 55, 55);
 
   JFrame frame, popup;
+
+  // screen 2
   JPanel albumMenuPanel, albumListPanel;
   JLabel albumNum, albumDate, albumCapacity, albumCards, albumTotalHp;
   JButton albumAdd, albumStats, exit;
 
-  JPanel cardsMenuPanel;
+  // screen 2
+  JPanel cardsMenuPanel, cardsMenuList;
   JButton cardAdd, albumRemove, returnToAlbums, cardSort;
+  JLabel albumsTitle;
 
   static ArrayList<Album> albums;
-
-  MenuState state = MenuState.ALBUMS;
+  Album selectedAlbum;
 
   public Driver() {
     frame = new JFrame("Pokemon Cards Collection");
-    frame.setPreferredSize(new Dimension(800, 400));
+    frame.setPreferredSize(new Dimension(800, 600));
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     initAlbumMenuPanel();
     initCardsMenuPanel();
 
-    frame.setContentPane(albumMenuPanel);
+    frame.setContentPane(cardsMenuPanel);
     frame.pack();
     frame.setVisible(true);
 
@@ -75,25 +79,25 @@ public class Driver extends JPanel implements ActionListener {
     exit.setActionCommand("exit");
     albumMenuPanel.add(exit, c);
 
-    JPanel albumsTitlePanel = new JPanel();
-    albumsTitlePanel.setBackground(bg);
-    albumsTitlePanel.setLayout(new BoxLayout(albumsTitlePanel, BoxLayout.PAGE_AXIS));
+    JPanel titlePanel = new JPanel();
+    titlePanel.setBackground(bg);
+    titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.PAGE_AXIS));
     c.fill = GridBagConstraints.HORIZONTAL;
     c.anchor = GridBagConstraints.CENTER;
-    c.insets = new Insets(5, 0, 5, 0);
+    c.insets = new Insets(15, 0, 15, 0);
     c.gridx = 0;
     c.gridwidth = 5;
     c.gridy = 1;
     JLabel albumsTitle = new JLabel("All Albums");
-    albumsTitle.setFont(new Font("Arial", Font.BOLD, 24));
+    albumsTitle.setFont(new Font("Helvetica", Font.BOLD, 24));
     albumsTitle.setForeground(Color.WHITE);
-    albumsTitlePanel.add(albumsTitle);
+    titlePanel.add(albumsTitle);
     albumsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
     JLabel albumsSubtitle = new JLabel("Hover for info, click to select.");
     albumsSubtitle.setForeground(Color.WHITE);
-    albumsTitlePanel.add(albumsSubtitle);
+    titlePanel.add(albumsSubtitle);
     albumsSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-    albumMenuPanel.add(albumsTitlePanel, c);
+    albumMenuPanel.add(titlePanel, c);
 
 
     albumListPanel = new JPanel();
@@ -124,6 +128,12 @@ public class Driver extends JPanel implements ActionListener {
     albumCards = new JLabel("# Cards: ");
     albumTotalHp = new JLabel("Total HP: ");
 
+    albumNum.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    albumDate.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    albumCapacity.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    albumCards.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    albumTotalHp.setFont(new Font("Helvetica", Font.PLAIN, 16));
+
     albumNum.setForeground(Color.WHITE);
     albumDate.setForeground(Color.WHITE);
     albumCapacity.setForeground(Color.WHITE);
@@ -139,7 +149,10 @@ public class Driver extends JPanel implements ActionListener {
     albumMenuPanel.add(albumInfoPanel, c);
 
     c.weighty = 1;
-    albumMenuPanel.add(new JPanel(), c);
+    c.gridy = 4;
+    JPanel bottomFiller = new JPanel();
+    bottomFiller.setBackground(bg);
+    albumMenuPanel.add(bottomFiller, c);
   }
 
   public void initCardsMenuPanel() {
@@ -167,14 +180,21 @@ public class Driver extends JPanel implements ActionListener {
     JPanel spacer = new JPanel();
     spacer.setBackground(bg);
     c.fill = GridBagConstraints.HORIZONTAL;
-    c.weightx = 1;
+    c.weightx = 2;
     c.gridx = 2;
     cardsMenuPanel.add(spacer, c);
+
+    JPanel spacer2 = new JPanel();
+    spacer2.setBackground(bg);
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.weightx = 1;
+    c.gridx = 3;
+    cardsMenuPanel.add(spacer2, c);
 
     cardAdd = new JButton("Add Card");
     c.fill = GridBagConstraints.HORIZONTAL;
     c.weightx = 0;
-    c.gridx = 3;
+    c.gridx = 4;
     cardAdd.addActionListener(this);
     cardAdd.setActionCommand("cardAdd");
     cardsMenuPanel.add(cardAdd, c);
@@ -182,42 +202,120 @@ public class Driver extends JPanel implements ActionListener {
     cardSort = new JButton("Sort Cards");
     c.fill = GridBagConstraints.HORIZONTAL;
     c.weightx = 0;
-    c.gridx = 4;
+    c.gridx = 5;
     exit.addActionListener(this);
     exit.setActionCommand("cardSort");
     cardsMenuPanel.add(cardSort, c);
 
-//    JPanel albumsTitlePanel = new JPanel();
-//    albumsTitlePanel.setBackground(bg);
-//    albumsTitlePanel.setLayout(new BoxLayout(albumsTitlePanel, BoxLayout.PAGE_AXIS));
-//    c.fill = GridBagConstraints.HORIZONTAL;
-//    c.anchor = GridBagConstraints.CENTER;
-//    c.insets = new Insets(5, 0, 5, 0);
-//    c.gridx = 0;
-//    c.gridwidth = 5;
-//    c.gridy = 1;
-//    JLabel albumsTitle = new JLabel("All Albums");
-//    albumsTitle.setFont(new Font("Arial", Font.BOLD, 24));
-//    albumsTitle.setForeground(Color.WHITE);
-//    albumsTitlePanel.add(albumsTitle);
-//    albumsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-//    JLabel albumsSubtitle = new JLabel("Hover for info, click to select.");
-//    albumsSubtitle.setForeground(Color.WHITE);
-//    albumsTitlePanel.add(albumsSubtitle);
-//    albumsSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-//    cardsMenuPanel.add(albumsTitlePanel, c);
-//
-//
-//    albumListPanel = new JPanel();
-//    c.fill = GridBagConstraints.HORIZONTAL;
-//    c.weightx = 0.0;
-//    c.gridwidth = 5;
-//    c.gridx = 0;
-//    c.gridy = 2;
-//
-//    albumListPanel.setBackground(dark1);
-//    albumListPanel.setLayout(new FlowLayout());
-//    cardsMenuPanel.add(albumListPanel, c);
+    JPanel titlePanel = new JPanel();
+    titlePanel.setBackground(bg);
+    titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.PAGE_AXIS));
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.anchor = GridBagConstraints.CENTER;
+    c.insets = new Insets(15, 0, 15, 0);
+    c.gridx = 0;
+    c.gridwidth = 6;
+    c.gridy = 1;
+    albumsTitle = new JLabel("Selected Album: ");
+    albumsTitle.setFont(new Font("Helvetica", Font.BOLD, 24));
+    albumsTitle.setForeground(Color.WHITE);
+    titlePanel.add(albumsTitle);
+    albumsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+    JLabel albumsSubtitle = new JLabel("Hover for info, click to select.");
+    albumsSubtitle.setForeground(Color.WHITE);
+    titlePanel.add(albumsSubtitle);
+    albumsSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+    cardsMenuPanel.add(titlePanel, c);
+
+
+    cardsMenuList = new JPanel();
+    c.fill = GridBagConstraints.BOTH;
+    c.weightx = 0;
+    c.gridwidth = 2;
+    c.gridx = 0;
+    c.gridy = 2;
+
+    cardsMenuList.setBackground(dark1);
+    cardsMenuList.setLayout(new FlowLayout());
+    cardsMenuPanel.add(cardsMenuList, c);
+
+    JPanel test1 = new JPanel();
+    test1.setBackground(dark2);
+    test1.setLayout(new BoxLayout(test1, BoxLayout.PAGE_AXIS));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    test1.add(new JLabel("Test"));
+    c.weightx = 0;
+    c.gridwidth = 1;
+    c.gridx = 2;
+
+    test1.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    int test1W = test1.getWidth();
+    JScrollPane test1Scroll = new JScrollPane(test1);
+    test1Scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    test1Scroll.setMaximumSize(new Dimension(test1W, 300));
+    test1Scroll.setPreferredSize(new Dimension(test1W, 300));
+    test1Scroll.setBorder(BorderFactory.createEmptyBorder());
+
+    cardsMenuPanel.add(test1Scroll, c);
+
+    test1Scroll.getVerticalScrollBar().setBackground(Color.BLACK);
+    test1Scroll.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+      @Override
+      protected void configureScrollBarColors() {
+        this.thumbColor = Color.BLUE;
+      }
+    });
+
+    JPanel test2 = new JPanel();
+    test2.setBackground(dark1);
+    test2.setLayout(new BoxLayout(test2, BoxLayout.PAGE_AXIS));
+    test2.add(new JLabel("Test"));
+    test2.add(new JLabel("Test"));
+    test2.add(new JLabel("Test"));
+    c.weightx = 0;
+    c.gridwidth = 3;
+    c.gridx = 3;
+
+    test2.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    int test2W = test2.getWidth();
+    JScrollPane test2Scroll = new JScrollPane(test2);
+    test2Scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    test2Scroll.setMaximumSize(new Dimension(test2W, 300));
+    test2Scroll.setPreferredSize(new Dimension(test2W, 300));
+    test2Scroll.setBorder(BorderFactory.createEmptyBorder());
+
+    cardsMenuPanel.add(test2Scroll, c);
 //
 //    JPanel albumInfoPanel = new JPanel();
 //    c.fill = GridBagConstraints.HORIZONTAL;
@@ -284,11 +382,12 @@ public class Driver extends JPanel implements ActionListener {
 
 
         if (albums.size() > i) {
-          System.out.println("i: " + i);
-          System.out.println("albums.size(): " + albums.size());
+          selectedAlbum = albums.get(i);
           JButton jb = new JButton(albums.get(i).getNum() + "");
           jb.setPreferredSize(new Dimension(40, 40));
           albumListPanel.add(jb);
+          jb.addActionListener(this);
+          jb.setActionCommand("select" + albums.get(i).getNum());
           final int labelNum = albums.get(i).getNum();
           final String labelDate = albums.get(i).getDate().toString();
           final int labelCapacity = albums.get(i).getCapacity();
@@ -310,6 +409,16 @@ public class Driver extends JPanel implements ActionListener {
       } catch (IOException e) {
         e.printStackTrace();
       }
+    } else if (eventName.equals("returnToAlbums")) {
+      cardsMenuPanel.setVisible(false);
+      albumMenuPanel.setVisible(true);
+      frame.setContentPane(albumMenuPanel);
+    } else if (eventName.startsWith("select")) {
+      albumMenuPanel.setVisible(false);
+      cardsMenuPanel.setVisible(true);
+      frame.setContentPane(cardsMenuPanel);
+
+      albumsTitle.setText("Selected Album: " + selectedAlbum.getNum());
     }
   }
 
