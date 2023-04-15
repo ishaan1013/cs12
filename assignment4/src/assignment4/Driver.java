@@ -1,12 +1,10 @@
 package assignment4;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class Driver extends JPanel implements ActionListener {
 
@@ -16,15 +14,16 @@ public class Driver extends JPanel implements ActionListener {
 
   JFrame frame, popup;
 
-  // screen 2
+  // screen 1
   JPanel albumMenuPanel, albumListPanel;
   JLabel albumNum, albumDate, albumCapacity, albumCards, albumTotalHp;
   JButton albumAdd, albumStats, exit;
 
   // screen 2
-  JPanel cardsMenuPanel, cardsMenuList;
+  JPanel cardsMenuPanel, cardsMenuList, cardsMenuAttacks;
+  JLabel albumsTitle, cardName, cardHp, cardType, cardDate, attackName, attackDesc, attackDamage;
   JButton cardAdd, albumRemove, returnToAlbums, cardSort;
-  JLabel albumsTitle;
+  Box cardList, attackList;
 
   static ArrayList<Album> albums;
   Album selectedAlbum;
@@ -37,7 +36,7 @@ public class Driver extends JPanel implements ActionListener {
     initAlbumMenuPanel();
     initCardsMenuPanel();
 
-    frame.setContentPane(cardsMenuPanel);
+    frame.setContentPane(albumMenuPanel);
     frame.pack();
     frame.setVisible(true);
 
@@ -180,21 +179,28 @@ public class Driver extends JPanel implements ActionListener {
     JPanel spacer = new JPanel();
     spacer.setBackground(bg);
     c.fill = GridBagConstraints.HORIZONTAL;
-    c.weightx = 2;
+    c.weightx = 0.75;
     c.gridx = 2;
     cardsMenuPanel.add(spacer, c);
 
     JPanel spacer2 = new JPanel();
     spacer2.setBackground(bg);
     c.fill = GridBagConstraints.HORIZONTAL;
-    c.weightx = 1;
+    c.weightx = 4;
     c.gridx = 3;
     cardsMenuPanel.add(spacer2, c);
+
+    JPanel spacer3 = new JPanel();
+    spacer3.setBackground(bg);
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.weightx = 1;
+    c.gridx = 4;
+    cardsMenuPanel.add(spacer3, c);
 
     cardAdd = new JButton("Add Card");
     c.fill = GridBagConstraints.HORIZONTAL;
     c.weightx = 0;
-    c.gridx = 4;
+    c.gridx = 5;
     cardAdd.addActionListener(this);
     cardAdd.setActionCommand("cardAdd");
     cardsMenuPanel.add(cardAdd, c);
@@ -202,7 +208,7 @@ public class Driver extends JPanel implements ActionListener {
     cardSort = new JButton("Sort Cards");
     c.fill = GridBagConstraints.HORIZONTAL;
     c.weightx = 0;
-    c.gridx = 5;
+    c.gridx = 6;
     exit.addActionListener(this);
     exit.setActionCommand("cardSort");
     cardsMenuPanel.add(cardSort, c);
@@ -214,142 +220,160 @@ public class Driver extends JPanel implements ActionListener {
     c.anchor = GridBagConstraints.CENTER;
     c.insets = new Insets(15, 0, 15, 0);
     c.gridx = 0;
-    c.gridwidth = 6;
+    c.gridwidth = 7;
     c.gridy = 1;
     albumsTitle = new JLabel("Selected Album: ");
     albumsTitle.setFont(new Font("Helvetica", Font.BOLD, 24));
     albumsTitle.setForeground(Color.WHITE);
     titlePanel.add(albumsTitle);
     albumsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-    JLabel albumsSubtitle = new JLabel("Hover for info, click to select.");
+    JLabel albumsSubtitle = new JLabel("Subtitle");
     albumsSubtitle.setForeground(Color.WHITE);
     titlePanel.add(albumsSubtitle);
     albumsSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
     cardsMenuPanel.add(titlePanel, c);
 
-
+    // COLUMN 1: CARDS
     cardsMenuList = new JPanel();
     c.fill = GridBagConstraints.BOTH;
     c.weightx = 0;
-    c.gridwidth = 2;
+    c.gridwidth = 3;
     c.gridx = 0;
     c.gridy = 2;
 
     cardsMenuList.setBackground(dark1);
-    cardsMenuList.setLayout(new FlowLayout());
-    cardsMenuPanel.add(cardsMenuList, c);
+    cardsMenuList.setLayout(new BorderLayout());
+    cardList = Box.createVerticalBox();
+    cardsMenuList.add(cardList, BorderLayout.PAGE_START);
 
-    JPanel test1 = new JPanel();
-    test1.setBackground(dark2);
-    test1.setLayout(new BoxLayout(test1, BoxLayout.PAGE_AXIS));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
-    test1.add(new JLabel("Test"));
+//    JPanel cardItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
+//    JLabel cardName = new JLabel("Card Name");
+//    cardName.setForeground(Color.WHITE);
+//    JButton cardSelect = new JButton("→");
+//    cardSelect.setMargin(new Insets(2, 3, 2, 3));
+//    cardSelect.addActionListener(this);
+//    cardSelect.setActionCommand("cardSelect");
+//    cardItem.add(cardName);
+//    cardItem.add(cardSelect);
+//    cardItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+//    cardItem.setBackground(dark1);
+//
+//    cardList.add(cardItem);
+
+    cardsMenuList.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    int cardsMenuListW = cardsMenuList.getWidth();
+    JScrollPane cardsMenuListScroll = new JScrollPane(cardsMenuList);
+    cardsMenuListScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    cardsMenuListScroll.setMaximumSize(new Dimension(cardsMenuListW, 300));
+    cardsMenuListScroll.setPreferredSize(new Dimension(cardsMenuListW, 300));
+    cardsMenuListScroll.setBorder(BorderFactory.createEmptyBorder());
+
+    cardsMenuPanel.add(cardsMenuListScroll, c);
+
+
+    // COLUMN 2: ATTACKS
+    cardsMenuAttacks = new JPanel();
+    cardsMenuAttacks.setBackground(dark2);
+    cardsMenuAttacks.setLayout(new BorderLayout());
+    attackList = Box.createVerticalBox();
+    cardsMenuAttacks.add(attackList, BorderLayout.PAGE_START);
+
+//    JPanel attackItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
+//    JLabel attackName = new JLabel("Attack Name");
+//    attackName.setForeground(Color.WHITE);
+//    JButton attackEdit = new JButton("Edit");
+//    attackEdit.setMargin(new Insets(2, 3, 2, 3));
+//    attackEdit.addActionListener(this);
+//    attackEdit.setActionCommand("attackEdit");
+//    JButton attackSelect = new JButton("→");
+//    attackSelect.setMargin(new Insets(2, 3, 2, 3));
+//    attackSelect.addActionListener(this);
+//    attackSelect.setActionCommand("attackSelect");
+//
+//    attackItem.add(attackName);
+//    attackItem.add(attackEdit);
+//    attackItem.add(attackSelect);
+//    attackItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+//    attackItem.setBackground(dark2);
+//
+//    attackList.add(attackItem);
+
     c.weightx = 0;
     c.gridwidth = 1;
-    c.gridx = 2;
-
-    test1.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-    int test1W = test1.getWidth();
-    JScrollPane test1Scroll = new JScrollPane(test1);
-    test1Scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-    test1Scroll.setMaximumSize(new Dimension(test1W, 300));
-    test1Scroll.setPreferredSize(new Dimension(test1W, 300));
-    test1Scroll.setBorder(BorderFactory.createEmptyBorder());
-
-    cardsMenuPanel.add(test1Scroll, c);
-
-    test1Scroll.getVerticalScrollBar().setBackground(Color.BLACK);
-    test1Scroll.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-      @Override
-      protected void configureScrollBarColors() {
-        this.thumbColor = Color.BLUE;
-      }
-    });
-
-    JPanel test2 = new JPanel();
-    test2.setBackground(dark1);
-    test2.setLayout(new BoxLayout(test2, BoxLayout.PAGE_AXIS));
-    test2.add(new JLabel("Test"));
-    test2.add(new JLabel("Test"));
-    test2.add(new JLabel("Test"));
-    c.weightx = 0;
-    c.gridwidth = 3;
     c.gridx = 3;
 
-    test2.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-    int test2W = test2.getWidth();
-    JScrollPane test2Scroll = new JScrollPane(test2);
-    test2Scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-    test2Scroll.setMaximumSize(new Dimension(test2W, 300));
-    test2Scroll.setPreferredSize(new Dimension(test2W, 300));
-    test2Scroll.setBorder(BorderFactory.createEmptyBorder());
+    cardsMenuAttacks.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    int cardsMenuAttacksW = cardsMenuAttacks.getWidth();
+    JScrollPane cardsMenuAttacksScroll = new JScrollPane(cardsMenuAttacks);
+    cardsMenuAttacksScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    cardsMenuAttacksScroll.setMaximumSize(new Dimension(cardsMenuAttacksW, 300));
+    cardsMenuAttacksScroll.setPreferredSize(new Dimension(cardsMenuAttacksW, 300));
+    cardsMenuAttacksScroll.setBorder(BorderFactory.createEmptyBorder());
 
-    cardsMenuPanel.add(test2Scroll, c);
-//
-//    JPanel albumInfoPanel = new JPanel();
-//    c.fill = GridBagConstraints.HORIZONTAL;
-//    c.weightx = 0.0;
-//    c.gridwidth = 5;
-//    c.gridx = 0;
-//    c.gridy = 3;
-//
-//    albumInfoPanel.setBackground(dark2);
-//    albumInfoPanel.setLayout(new BoxLayout(albumInfoPanel, BoxLayout.PAGE_AXIS));
-//    albumInfoPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-//
-//    albumNum = new JLabel("Album #: ");
-//    albumDate = new JLabel("Date: ");
-//    albumCapacity = new JLabel("Capacity: ");
-//    albumCards = new JLabel("# Cards: ");
-//    albumTotalHp = new JLabel("Total HP: ");
-//
-//    albumNum.setForeground(Color.WHITE);
-//    albumDate.setForeground(Color.WHITE);
-//    albumCapacity.setForeground(Color.WHITE);
-//    albumCards.setForeground(Color.WHITE);
-//    albumTotalHp.setForeground(Color.WHITE);
-//
-//    albumInfoPanel.add(albumNum);
-//    albumInfoPanel.add(albumDate);
-//    albumInfoPanel.add(albumCapacity);
-//    albumInfoPanel.add(albumCards);
-//    albumInfoPanel.add(albumTotalHp);
-//
-//    cardsMenuPanel.add(albumInfoPanel, c);
-//
-//    c.weighty = 1;
-//    cardsMenuPanel.add(new JPanel(), c);
+    cardsMenuPanel.add(cardsMenuAttacksScroll, c);
+
+    // COLUMN 3: INFO
+    JPanel cardsMenuInfo = new JPanel();
+    cardsMenuInfo.setBackground(dark1);
+    cardsMenuInfo.setLayout(new BoxLayout(cardsMenuInfo, BoxLayout.PAGE_AXIS));
+    cardName = new JLabel("Card: ");
+    cardHp = new JLabel("Hp: ");
+    cardType = new JLabel("Type: ");
+    cardDate = new JLabel("Date: ");
+    attackName = new JLabel("Name: ");
+    attackDesc = new JLabel("Description: ");
+    attackDamage = new JLabel("Damage: ");
+
+    cardName.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    cardHp.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    cardType.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    cardDate.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    attackName.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    attackDesc.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    attackDamage.setFont(new Font("Helvetica", Font.PLAIN, 16));
+
+    cardName.setForeground(Color.WHITE);
+    cardHp.setForeground(Color.WHITE);
+    cardType.setForeground(Color.WHITE);
+    cardDate.setForeground(Color.WHITE);
+    attackName.setForeground(Color.WHITE);
+    attackDesc.setForeground(Color.WHITE);
+    attackDamage.setForeground(Color.WHITE);
+    c.weightx = 0;
+    c.gridwidth = 3;
+    c.gridx = 4;
+
+    JLabel cardLabel = new JLabel("Selected Card:");
+    cardLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+    cardLabel.setFont(new Font("Helvetica", Font.BOLD, 16));
+    cardLabel.setForeground(Color.WHITE);
+
+    cardsMenuInfo.add(cardLabel);
+    cardsMenuInfo.add(cardName);
+    cardsMenuInfo.add(cardHp);
+    cardsMenuInfo.add(cardType);
+    cardsMenuInfo.add(cardDate);
+
+    JLabel attackLabel = new JLabel("Selected Attack:");
+    attackLabel.setBorder(BorderFactory.createEmptyBorder(16, 0, 6, 0));
+    attackLabel.setFont(new Font("Helvetica", Font.BOLD, 16));
+    attackLabel.setForeground(Color.WHITE);
+
+    cardsMenuInfo.add(attackLabel);
+    cardsMenuInfo.add(attackName);
+    cardsMenuInfo.add(attackDesc);
+    cardsMenuInfo.add(attackDamage);
+
+    cardsMenuInfo.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+    int cardsMenuInfoW = cardsMenuInfo.getWidth();
+    JScrollPane cardsMenuInfoScroll = new JScrollPane(cardsMenuInfo);
+    cardsMenuInfoScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    cardsMenuInfoScroll.setMaximumSize(new Dimension(cardsMenuInfoW, 300));
+    cardsMenuInfoScroll.setPreferredSize(new Dimension(cardsMenuInfoW, 300));
+    cardsMenuInfoScroll.setBorder(BorderFactory.createEmptyBorder());
+
+    cardsMenuPanel.add(cardsMenuInfoScroll, c);
+
   }
 
   public void paintComponent(Graphics g) {
@@ -419,6 +443,57 @@ public class Driver extends JPanel implements ActionListener {
       frame.setContentPane(cardsMenuPanel);
 
       albumsTitle.setText("Selected Album: " + selectedAlbum.getNum());
+
+      for (int i = 0; i < selectedAlbum.getCards().size(); i++) {
+        JPanel cardItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
+        JLabel cardName = new JLabel(selectedAlbum.getCards().get(i).getName());
+        cardName.setForeground(Color.WHITE);
+        JButton cardSelect = new JButton("→");
+        cardSelect.setMargin(new Insets(2, 3, 2, 3));
+        cardSelect.addActionListener(this);
+        cardSelect.setActionCommand("cardSelect" + i);
+        cardItem.add(cardName);
+        cardItem.add(cardSelect);
+        cardItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+        cardItem.setBackground(dark1);
+
+        cardList.add(cardItem);
+      }
+      cardList.revalidate();
+      cardsMenuList.revalidate();
+    } else if (eventName.startsWith("cardSelect")) {
+      int index = Integer.parseInt(eventName.substring(10));
+      Card selectedCard = selectedAlbum.getCards().get(index);
+      cardName.setText("Card: " + selectedCard.getName());
+      cardHp.setText("Hp: " + selectedCard.getHp());
+      cardType.setText("Type: " + selectedCard.getType());
+      cardDate.setText("Date: " + selectedCard.getDate().toString());
+
+      for (int i = 0; i < selectedCard.getAttacks().size(); i++) {
+        System.out.println("Attack: " + selectedCard.getAttacks().get(i).getName());
+        JPanel attackItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
+        JLabel attackName = new JLabel(selectedCard.getAttacks().get(i).getName());
+        attackName.setForeground(Color.WHITE);
+        JButton attackEdit = new JButton("Edit");
+        attackEdit.setMargin(new Insets(2, 3, 2, 3));
+        attackEdit.addActionListener(this);
+        attackEdit.setActionCommand("attackEdit" + i);
+        JButton attackSelect = new JButton("→");
+        attackSelect.setMargin(new Insets(2, 3, 2, 3));
+        attackSelect.addActionListener(this);
+        attackSelect.setActionCommand("attackSelect" + i);
+
+        attackItem.add(attackName);
+        attackItem.add(attackEdit);
+        attackItem.add(attackSelect);
+        attackItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+        attackItem.setBackground(dark2);
+
+        attackList.add(attackItem);
+      }
+      attackList.revalidate();
+      cardsMenuAttacks.revalidate();
+
     }
   }
 

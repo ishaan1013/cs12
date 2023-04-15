@@ -3,9 +3,21 @@ package assignment4;
 import java.util.StringTokenizer;
 
 public class Attack {
-  String name;
-  String desc;
-  String damage;
+  private String name;
+  private String desc;
+  private String damage;
+
+  public String getName() {
+    return name;
+  }
+
+  public String getDesc() {
+    return desc;
+  }
+
+  public String getDamage() {
+    return damage;
+  }
 
   public Attack(String attackInfo, String attackDamage) {
     if (attackInfo.contains("-")) {

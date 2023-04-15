@@ -4,11 +4,31 @@ import java.util.*;
 
 public class Card {
 
-  int hp;
-  String name;
-  String type;
-  Date date;
-  ArrayList<Attack> attacks;
+  private int hp;
+  private String name;
+  private String type;
+  private Date date;
+  private ArrayList<Attack> attacks;
+
+  public int getHp() {
+    return hp;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  public ArrayList<Attack> getAttacks() {
+    return attacks;
+  }
 
   public Card(String name, int hp, String type, Date date, ArrayList<Attack> attacks) {
     this.name = name;

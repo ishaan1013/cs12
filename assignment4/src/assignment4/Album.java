@@ -38,7 +38,7 @@ public class Album {
     this.hp = 0;
 
     for (Card card : cards) {
-      this.hp += card.hp;
+      this.hp += card.getHp();
     }
   }
 
