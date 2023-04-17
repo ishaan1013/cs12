@@ -1,3 +1,7 @@
+// Ishaan Dey
+// April 14. 2023
+// Assignment 4 Part 2 (with graphics)
+
 package assignment4;
 
 import java.awt.*;
@@ -13,6 +17,7 @@ public class Driver extends JPanel implements ActionListener {
   Color dark2 = new Color(55, 55, 55);
 
   JFrame frame, popup;
+  HashSet<Integer> ids = new HashSet<Integer>();
 
   // screen 1
   JPanel albumMenuPanel, albumListPanel;
@@ -28,6 +33,9 @@ public class Driver extends JPanel implements ActionListener {
   static ArrayList<Album> albums;
   Album selectedAlbum;
 
+  // driver constructor to initialize the frame & menus
+  // no params
+  // no return
   public Driver() {
     frame = new JFrame("Pokemon Cards Collection");
     frame.setPreferredSize(new Dimension(800, 600));
@@ -42,6 +50,9 @@ public class Driver extends JPanel implements ActionListener {
 
   }
 
+  // initializes the album menu panel with the layout etc. (global variables)
+  // no params
+  // void
   public void initAlbumMenuPanel() {
     albumMenuPanel = new JPanel();
     albumMenuPanel.setBackground(bg);
@@ -139,6 +150,12 @@ public class Driver extends JPanel implements ActionListener {
     albumCards.setForeground(Color.WHITE);
     albumTotalHp.setForeground(Color.WHITE);
 
+    JLabel hoveredLabel = new JLabel("Hovered Album:");
+    hoveredLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+    hoveredLabel.setFont(new Font("Helvetica", Font.BOLD, 16));
+    hoveredLabel.setForeground(Color.WHITE);
+
+    albumInfoPanel.add(hoveredLabel);
     albumInfoPanel.add(albumNum);
     albumInfoPanel.add(albumDate);
     albumInfoPanel.add(albumCapacity);
@@ -154,6 +171,9 @@ public class Driver extends JPanel implements ActionListener {
     albumMenuPanel.add(bottomFiller, c);
   }
 
+  // initializes the cards menu panel with the layout etc. (global variables) (inside an album)
+  // no params
+  // void
   public void initCardsMenuPanel() {
     cardsMenuPanel = new JPanel();
     cardsMenuPanel.setBackground(bg);
@@ -209,8 +229,8 @@ public class Driver extends JPanel implements ActionListener {
     c.fill = GridBagConstraints.HORIZONTAL;
     c.weightx = 0;
     c.gridx = 6;
-    exit.addActionListener(this);
-    exit.setActionCommand("cardSort");
+    cardSort.addActionListener(this);
+    cardSort.setActionCommand("cardSort");
     cardsMenuPanel.add(cardSort, c);
 
     JPanel titlePanel = new JPanel();
@@ -227,7 +247,7 @@ public class Driver extends JPanel implements ActionListener {
     albumsTitle.setForeground(Color.WHITE);
     titlePanel.add(albumsTitle);
     albumsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-    JLabel albumsSubtitle = new JLabel("Subtitle");
+    JLabel albumsSubtitle = new JLabel("Click to select card, then attack.");
     albumsSubtitle.setForeground(Color.WHITE);
     titlePanel.add(albumsSubtitle);
     albumsSubtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -246,20 +266,6 @@ public class Driver extends JPanel implements ActionListener {
     cardList = Box.createVerticalBox();
     cardsMenuList.add(cardList, BorderLayout.PAGE_START);
 
-//    JPanel cardItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
-//    JLabel cardName = new JLabel("Card Name");
-//    cardName.setForeground(Color.WHITE);
-//    JButton cardSelect = new JButton("→");
-//    cardSelect.setMargin(new Insets(2, 3, 2, 3));
-//    cardSelect.addActionListener(this);
-//    cardSelect.setActionCommand("cardSelect");
-//    cardItem.add(cardName);
-//    cardItem.add(cardSelect);
-//    cardItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
-//    cardItem.setBackground(dark1);
-//
-//    cardList.add(cardItem);
-
     cardsMenuList.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
     int cardsMenuListW = cardsMenuList.getWidth();
     JScrollPane cardsMenuListScroll = new JScrollPane(cardsMenuList);
@@ -277,26 +283,6 @@ public class Driver extends JPanel implements ActionListener {
     cardsMenuAttacks.setLayout(new BorderLayout());
     attackList = Box.createVerticalBox();
     cardsMenuAttacks.add(attackList, BorderLayout.PAGE_START);
-
-//    JPanel attackItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
-//    JLabel attackName = new JLabel("Attack Name");
-//    attackName.setForeground(Color.WHITE);
-//    JButton attackEdit = new JButton("Edit");
-//    attackEdit.setMargin(new Insets(2, 3, 2, 3));
-//    attackEdit.addActionListener(this);
-//    attackEdit.setActionCommand("attackEdit");
-//    JButton attackSelect = new JButton("→");
-//    attackSelect.setMargin(new Insets(2, 3, 2, 3));
-//    attackSelect.addActionListener(this);
-//    attackSelect.setActionCommand("attackSelect");
-//
-//    attackItem.add(attackName);
-//    attackItem.add(attackEdit);
-//    attackItem.add(attackSelect);
-//    attackItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
-//    attackItem.setBackground(dark2);
-//
-//    attackList.add(attackItem);
 
     c.weightx = 0;
     c.gridwidth = 1;
@@ -374,13 +360,19 @@ public class Driver extends JPanel implements ActionListener {
 
     cardsMenuPanel.add(cardsMenuInfoScroll, c);
 
+    c.weighty = 1;
+    c.gridy = 3;
+    JPanel bottomFiller = new JPanel();
+    bottomFiller.setBackground(bg);
+    cardsMenuPanel.add(bottomFiller, c);
+
   }
 
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-
   }
 
+  // main method
   public static void main(String[] args) {
 
     albums = new ArrayList<Album>();
@@ -388,6 +380,9 @@ public class Driver extends JPanel implements ActionListener {
     new Driver();
   }
 
+  // handles all events (from buttons) based on the action command
+  // takes in the event as a parameter
+  // void
   public void actionPerformed(ActionEvent event) {
 
     String eventName = event.getActionCommand();
@@ -406,12 +401,11 @@ public class Driver extends JPanel implements ActionListener {
 
 
         if (albums.size() > i) {
-          selectedAlbum = albums.get(i);
           JButton jb = new JButton(albums.get(i).getNum() + "");
           jb.setPreferredSize(new Dimension(40, 40));
           albumListPanel.add(jb);
           jb.addActionListener(this);
-          jb.setActionCommand("select" + albums.get(i).getNum());
+          jb.setActionCommand("select" + i);
           final int labelNum = albums.get(i).getNum();
           final String labelDate = albums.get(i).getDate().toString();
           final int labelCapacity = albums.get(i).getCapacity();
@@ -437,7 +431,25 @@ public class Driver extends JPanel implements ActionListener {
       cardsMenuPanel.setVisible(false);
       albumMenuPanel.setVisible(true);
       frame.setContentPane(albumMenuPanel);
+
+      //resetting
+      cardList.removeAll();
+      attackList.removeAll();
+      cardName.setText("Card: ");
+      cardHp.setText("Hp: ");
+      cardType.setText("Type: ");
+      cardDate.setText("Date: ");
+
     } else if (eventName.startsWith("select")) {
+      // reset the hovered info
+      albumNum.setText("Album #: ");
+      albumDate.setText("Date: ");
+      albumCapacity.setText("Capacity: ");
+      albumCards.setText("# Cards: ");
+      albumTotalHp.setText("Total HP: ");
+
+      int index = Integer.parseInt(eventName.substring(6));
+      selectedAlbum = albums.get(index);
       albumMenuPanel.setVisible(false);
       cardsMenuPanel.setVisible(true);
       frame.setContentPane(cardsMenuPanel);
@@ -452,8 +464,13 @@ public class Driver extends JPanel implements ActionListener {
         cardSelect.setMargin(new Insets(2, 3, 2, 3));
         cardSelect.addActionListener(this);
         cardSelect.setActionCommand("cardSelect" + i);
+        JButton cardRemove = new JButton("x");
+        cardRemove.setMargin(new Insets(2, 3, 2, 3));
+        cardRemove.addActionListener(this);
+        cardRemove.setActionCommand("cardRemove" + i);
         cardItem.add(cardName);
         cardItem.add(cardSelect);
+        cardItem.add(cardRemove);
         cardItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
         cardItem.setBackground(dark1);
 
@@ -469,8 +486,9 @@ public class Driver extends JPanel implements ActionListener {
       cardType.setText("Type: " + selectedCard.getType());
       cardDate.setText("Date: " + selectedCard.getDate().toString());
 
+      attackList.removeAll();
+
       for (int i = 0; i < selectedCard.getAttacks().size(); i++) {
-        System.out.println("Attack: " + selectedCard.getAttacks().get(i).getName());
         JPanel attackItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
         JLabel attackName = new JLabel(selectedCard.getAttacks().get(i).getName());
         attackName.setForeground(Color.WHITE);
@@ -497,6 +515,9 @@ public class Driver extends JPanel implements ActionListener {
     }
   }
 
+  // add a new album
+  // takes in the file name
+  // returns the album to be added to the arraylist
   public Album add(String file) throws IOException {
 
     if (file == null) {
@@ -508,7 +529,14 @@ public class Driver extends JPanel implements ActionListener {
     try {
       BufferedReader inFile = new BufferedReader(new FileReader(file));
 
+
       int albumNum = Integer.parseInt(inFile.readLine());
+      if (ids.contains(albumNum)) {
+        popup = new JFrame();
+        JOptionPane.showMessageDialog(popup, "Already added.");
+        return null;
+      }
+      ids.add(albumNum);
       Date date = new Date(inFile.readLine());
       int capacity = Integer.parseInt(inFile.readLine());
       int numCards = Integer.parseInt(inFile.readLine());

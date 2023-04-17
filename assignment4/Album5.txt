@@ -1,0 +1,45 @@
+5
+05/03/2017
+50
+5
+Sableye
+60
+Dark
+02/12/2016
+2
+Pull out - Search your discard pile for any I card, show it to your opponent, and put it on top of our deck.
+0
+Dark Hand - If you have more cards in your hand than your opponent, this attack does 20 damage plus 30 more damage.
+20+
+Salandit
+70
+Fire
+01/09/2021
+1
+Grass Fire - Discard Energy from your opponent's Active Pokemon.
+10
+Larvitar
+60
+Fighting
+04/16/2018
+1
+Reckless Charge - This Pokemon does 10 damage to itself.
+20
+Sableye
+60
+Dark
+09/24/2019
+2
+Pull out - Search your discard pile for any I card, show it to your opponent, and put it on top of our deck.
+0
+Dark Hand - If you have more cards in your hand than your opponent, this attack does 20 damage plus 30 more damage.
+20+
+Togedemaru
+70
+Electric
+06/20/2017
+2
+Defense Curl - Flip a coin. If heads, prevent all damage done to this Pokemon by attacks during your opponent's next turn.
+0
+Discharge - Discard all Energy from this Pokemon.  This attack does 30 damage for each card you discarded in this way.
+30x

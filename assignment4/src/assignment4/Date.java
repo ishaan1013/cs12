@@ -2,11 +2,25 @@ package assignment4;
 
 public class Date {
 
-  int m;
-  int d;
-  int y;
+  private int m;
+  private int d;
+  private int y;
+
+  public int getMonth() {
+    return m;
+  }
+
+  public int getDay() {
+    return d;
+  }
+
+  public int getYear() {
+    return y;
+  }
 
   public Date(String dateString) {
+    // check invalid dates
+    // not used for this part of the assignment
     String[] date = dateString.split("/");
 
     try {
@@ -14,8 +28,6 @@ public class Date {
       int day = Integer.parseInt(date[1]);
       int year = Integer.parseInt(date[2]);
       boolean error = false;
-      // todo throw/indicate error?
-
 
       if (year < 0 || year > 2023) error = true;
       if (month < 1 || month > 12) error = true;
@@ -35,12 +47,12 @@ public class Date {
 
 
     } catch (NumberFormatException e) {
-      // todo throw/indicate error?
+      //something
     }
 
   }
 
-  // todo pad with zeros
+  // todo pad zeros
   public String toString() {
     return m + "/" + d + "/" + y;
   }

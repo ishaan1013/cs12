@@ -10,6 +10,7 @@ public class Album {
   private int hp;
   private Date date;
 
+  //getter methods
   public int getNum() {
     return num;
   }
@@ -30,6 +31,8 @@ public class Album {
     return date;
   }
 
+
+  // constructor
   public Album(int num, Date date, int capacity, ArrayList<Card> cards) {
     this.num = num;
     this.date = date;
@@ -37,28 +40,27 @@ public class Album {
     this.cards = cards;
     this.hp = 0;
 
+    // add up total hp
     for (Card card : cards) {
       this.hp += card.getHp();
     }
   }
 
-  void displayInfo(int num, Date date, int capacity, int cards, int hp) {
+  // add a card to the album
+  // takes in all the necessary info inputted by user
+  // returns the card to be added
+  public Card addCard(int hp, String name, String type, Date date, ArrayList<Attack> attacks) {
+    return null;
   }
 
-  void displayCards(ArrayList<Card> cards) {
+  // choose how to sort, then the method sorts the cards with that info (either by the natural order or with a comparator)
+  // takes in the sorting type
+  // void (updates the instance variable)
+  public void sort(String sortBy) {
   }
 
-  void addCard(int hp, String name, String type, Date date, ArrayList<Attack> attacks) {
-  }
-
-  void remove(String type, String item) {
-  }
-
-  void edit(String name, String attack, String field, String value) {
-  }
-
-  void sort(String type) {
-  }
+  // no edit method here, will be in the attack class
+  // no toString because im doing graphics
 
 
 }

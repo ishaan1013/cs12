@@ -7,7 +7,7 @@ Jigglypuff
 Fairy
 06/12/2020
 2
-Double Slap – Flip 2 coins. This attack does 20damage times the number of heads.
+Double Slap - Flip 2 coins. This attack does 20damage times the number of heads.
 20x
 Rollout
 10

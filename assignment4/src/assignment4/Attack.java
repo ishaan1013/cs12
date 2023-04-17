@@ -7,6 +7,7 @@ public class Attack {
   private String desc;
   private String damage;
 
+  // getter methods
   public String getName() {
     return name;
   }
@@ -19,9 +20,10 @@ public class Attack {
     return damage;
   }
 
+  // constructor splits up the name and description from the given info
   public Attack(String attackInfo, String attackDamage) {
-    if (attackInfo.contains("-")) {
-      StringTokenizer st = new StringTokenizer(attackInfo, "-");
+    if (attackInfo.contains("-") || attackInfo.contains("–")) {
+      StringTokenizer st = new StringTokenizer(attackInfo, "-–");
       name = st.nextToken().trim();
       desc = st.nextToken().trim();
     } else {
