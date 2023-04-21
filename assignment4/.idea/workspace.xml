@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e0df160c-463f-4d4d-90d3-8e0fee8f536e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/assignment4/Album.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/assignment4/Album.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/assignment4/Driver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/assignment4/Driver.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -141,7 +140,8 @@
       <workItem from="1681740256885" duration="524000" />
       <workItem from="1681824499475" duration="376000" />
       <workItem from="1682043069076" duration="64000" />
-      <workItem from="1682044016004" duration="1974000" />
+      <workItem from="1682044016004" duration="2618000" />
+      <workItem from="1682084025158" duration="4591000" />
     </task>
     <servers />
   </component>
@@ -158,16 +158,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/assignment4/Driver.java</url>
-          <line>465</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

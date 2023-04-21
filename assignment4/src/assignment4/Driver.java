@@ -77,6 +77,8 @@ public class Driver extends JPanel implements ActionListener {
     albumMenuPanel.add(spacer, c);
 
     albumStats = new JButton("Stats");
+    albumStats.addActionListener(this);
+    albumStats.setActionCommand("stats");
     c.fill = GridBagConstraints.HORIZONTAL;
     c.weightx = 0;
     c.gridx = 3;
@@ -452,6 +454,11 @@ public class Driver extends JPanel implements ActionListener {
       cardType.setText("Type: ");
       cardDate.setText("Date: ");
 
+    } else if (eventName.equals("stats")) {
+
+      popup = new JFrame();
+      JOptionPane.showMessageDialog(popup, "Stats.");
+
     } else if (eventName.startsWith("select")) {
       // reset the hovered info
       albumNum.setText("Album #: ");
@@ -527,6 +534,43 @@ public class Driver extends JPanel implements ActionListener {
       attackList.revalidate();
       cardsMenuAttacks.revalidate();
 
+    } else if (eventName.equals("cardSort")) {
+      String[] options = {"Sort by name", "Sort by hp", "Sort by date"};
+      popup = new JFrame();
+      String n = (String) JOptionPane.showInputDialog(popup, "Choose Sorting Option",
+          null, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
+      System.out.println(n);
+    } else if (eventName.equals("cardAdd")) {
+      JTextField nameField = new JTextField(5);
+      JTextField hpField = new JTextField(5);
+      JTextField attacksField = new JTextField(5);
+      JPanel cardAddPanel = new JPanel();
+
+      cardAddPanel.setLayout(new BoxLayout(cardAddPanel, BoxLayout.PAGE_AXIS));
+      JLabel nameLabel = new JLabel("Card Name:");
+      nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      cardAddPanel.add(nameLabel);
+      cardAddPanel.add(nameField);
+      cardAddPanel.add(Box.createVerticalStrut(10)); // a spacer
+      JLabel hpLabel = new JLabel("Card HP:");
+      hpLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      cardAddPanel.add(hpLabel);
+      cardAddPanel.add(hpField);
+      cardAddPanel.add(Box.createVerticalStrut(10)); // a spacer
+      JLabel attacksLabel = new JLabel("# of Attacks:");
+      attacksLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      cardAddPanel.add(attacksLabel);
+      cardAddPanel.add(attacksField);
+
+      int result = JOptionPane.showConfirmDialog(null, cardAddPanel,
+          "Create A Card", JOptionPane.OK_CANCEL_OPTION);
+      if (result == JOptionPane.OK_OPTION) {
+        System.out.println("name: " + nameField.getText());
+        System.out.println("hp: " + hpField.getText());
+        System.out.println("# attacks: " + attacksField.getText());
+
+        //todo get all attack info
+      }
     }
   }
 
