@@ -30,7 +30,8 @@ public class Driver extends JPanel implements ActionListener {
   JButton cardAdd, albumRemove, returnToAlbums, cardSort;
   Box cardList, attackList;
 
-  static ArrayList<Album> albums;
+  static ArrayList<Album> albums = new ArrayList<Album>();
+  static ArrayList<JButton> albumButtons = new ArrayList<JButton>();
   Album selectedAlbum;
 
   // driver constructor to initialize the frame & menus
@@ -375,8 +376,6 @@ public class Driver extends JPanel implements ActionListener {
   // main method
   public static void main(String[] args) {
 
-    albums = new ArrayList<Album>();
-
     new Driver();
   }
 
@@ -397,15 +396,11 @@ public class Driver extends JPanel implements ActionListener {
         Album added = add(fileName);
         if (added != null) {
           albums.add(added);
-        }
 
-
-        if (albums.size() > i) {
           JButton jb = new JButton(albums.get(i).getNum() + "");
           jb.setPreferredSize(new Dimension(40, 40));
-          albumListPanel.add(jb);
           jb.addActionListener(this);
-          jb.setActionCommand("select" + i);
+          jb.setActionCommand("select" + albums.get(i).getNum());
           final int labelNum = albums.get(i).getNum();
           final String labelDate = albums.get(i).getDate().toString();
           final int labelCapacity = albums.get(i).getCapacity();
@@ -421,14 +416,31 @@ public class Driver extends JPanel implements ActionListener {
             }
           });
 
+          albumButtons.add(jb);
+
+          albumListPanel.add(jb);
           albumListPanel.revalidate();
         }
 
       } catch (IOException e) {
         e.printStackTrace();
       }
-    } else if (eventName.equals("returnToAlbums")) {
+    } else if (eventName.equals("returnToAlbums") || eventName.equals("albumRemove")) {
       cardsMenuPanel.setVisible(false);
+
+      if (eventName.equals("albumRemove")) {
+        int i = albums.indexOf(selectedAlbum);
+        JButton buttonToRemove = albumButtons.get(i);
+
+        albums.remove(selectedAlbum);
+        albumButtons.remove(i);
+        ids.remove(selectedAlbum.getNum());
+
+        albumListPanel.remove(buttonToRemove);
+        albumListPanel.revalidate();
+
+      }
+
       albumMenuPanel.setVisible(true);
       frame.setContentPane(albumMenuPanel);
 
@@ -449,7 +461,9 @@ public class Driver extends JPanel implements ActionListener {
       albumTotalHp.setText("Total HP: ");
 
       int index = Integer.parseInt(eventName.substring(6));
-      selectedAlbum = albums.get(index);
+      // todo eventName to be album number, and then find the album with that number using indexOf
+      System.out.println("selected album: " + index);
+      selectedAlbum = albums.get(albums.indexOf(new Album(index, null, 0, null)));
       albumMenuPanel.setVisible(false);
       cardsMenuPanel.setVisible(true);
       frame.setContentPane(cardsMenuPanel);
@@ -479,6 +493,7 @@ public class Driver extends JPanel implements ActionListener {
       cardList.revalidate();
       cardsMenuList.revalidate();
     } else if (eventName.startsWith("cardSelect")) {
+      // todo change to using card name or something instead of index, bc this will cause problems with indexing once we start removing cards
       int index = Integer.parseInt(eventName.substring(10));
       Card selectedCard = selectedAlbum.getCards().get(index);
       cardName.setText("Card: " + selectedCard.getName());

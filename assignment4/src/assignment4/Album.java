@@ -41,8 +41,10 @@ public class Album {
     this.hp = 0;
 
     // add up total hp
-    for (Card card : cards) {
-      this.hp += card.getHp();
+    if (cards != null) {
+      for (Card card : cards) {
+        this.hp += card.getHp();
+      }
     }
   }
 
@@ -57,6 +59,12 @@ public class Album {
   // takes in the sorting type
   // void (updates the instance variable)
   public void sort(String sortBy) {
+  }
+
+  public boolean equals(Object o) {
+    Album other = (Album) o;
+    int num = other.getNum();
+    return this.num == num;
   }
 
   // no edit method here, will be in the attack class
