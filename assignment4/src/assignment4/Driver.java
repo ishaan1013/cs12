@@ -6,6 +6,7 @@ package assignment4;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
@@ -536,14 +537,16 @@ public class Driver extends JPanel implements ActionListener {
 
     } else if (eventName.equals("cardSort")) {
       String[] options = {"Sort by name", "Sort by hp", "Sort by date"};
-      popup = new JFrame();
-      String n = (String) JOptionPane.showInputDialog(popup, "Choose Sorting Option",
+      String n = (String) JOptionPane.showInputDialog(null, "Choose Sorting Option",
           null, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
       System.out.println(n);
+
     } else if (eventName.equals("cardAdd")) {
       JTextField nameField = new JTextField(5);
       JTextField hpField = new JTextField(5);
+      JTextField typeField = new JTextField(5);
       JTextField attacksField = new JTextField(5);
+      JTextField dateField = new JTextField(5);
       JPanel cardAddPanel = new JPanel();
 
       cardAddPanel.setLayout(new BoxLayout(cardAddPanel, BoxLayout.PAGE_AXIS));
@@ -551,25 +554,103 @@ public class Driver extends JPanel implements ActionListener {
       nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
       cardAddPanel.add(nameLabel);
       cardAddPanel.add(nameField);
-      cardAddPanel.add(Box.createVerticalStrut(10)); // a spacer
+      cardAddPanel.add(Box.createVerticalStrut(10));
       JLabel hpLabel = new JLabel("Card HP:");
       hpLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
       cardAddPanel.add(hpLabel);
       cardAddPanel.add(hpField);
-      cardAddPanel.add(Box.createVerticalStrut(10)); // a spacer
+      cardAddPanel.add(Box.createVerticalStrut(10));
+      JLabel typeLabel = new JLabel("Card Type:");
+      typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      cardAddPanel.add(typeLabel);
+      cardAddPanel.add(typeField);
+      cardAddPanel.add(Box.createVerticalStrut(10));
       JLabel attacksLabel = new JLabel("# of Attacks:");
       attacksLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
       cardAddPanel.add(attacksLabel);
       cardAddPanel.add(attacksField);
+      cardAddPanel.add(Box.createVerticalStrut(10));
+      JLabel dateLabel = new JLabel("Date (mm/dd/yyyy):");
+      dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      cardAddPanel.add(dateLabel);
+      cardAddPanel.add(dateField);
+      cardAddPanel.add(Box.createVerticalStrut(10));
+
 
       int result = JOptionPane.showConfirmDialog(null, cardAddPanel,
           "Create A Card", JOptionPane.OK_CANCEL_OPTION);
       if (result == JOptionPane.OK_OPTION) {
-        System.out.println("name: " + nameField.getText());
-        System.out.println("hp: " + hpField.getText());
-        System.out.println("# attacks: " + attacksField.getText());
+        popup = new JFrame();
+        if (nameField.getText().isEmpty() || hpField.getText().isEmpty() || typeField.getText().isEmpty() || attacksField.getText().isEmpty() || dateField.getText().isEmpty()) {
+          JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+          try {
+            int hp = Integer.parseInt(hpField.getText());
+            int attacks = Integer.parseInt(attacksField.getText());
+            if (hp < 0 || attacks < 0) {
+              JOptionPane.showMessageDialog(popup, "Hp and attacks must be positive.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (!Date.isValid(dateField.getText())) {
+              JOptionPane.showMessageDialog(popup, "Invalid Date.", "Error", JOptionPane.ERROR_MESSAGE);
 
-        //todo get all attack info
+            } else {
+
+              ArrayList<Attack> attackList = new ArrayList<Attack>();
+              int numAttacks = Integer.parseInt(attacksField.getText());
+              boolean cancelled = false;
+              for (int i = 0; i < numAttacks; i++) {
+                if (cancelled) {
+                  break;
+                }
+                while (true) {
+                  JTextField infoField = new JTextField(5);
+                  JTextField damageField = new JTextField(5);
+                  JPanel attackAddPanel = new JPanel();
+
+                  attackAddPanel.setLayout(new BoxLayout(attackAddPanel, BoxLayout.PAGE_AXIS));
+                  JLabel infoLabel = new JLabel("Attack (SEPARATE NAME & DESC WITH '-'):");
+                  infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                  attackAddPanel.add(infoLabel);
+                  attackAddPanel.add(infoField);
+                  attackAddPanel.add(Box.createVerticalStrut(10));
+                  attackAddPanel.setLayout(new BoxLayout(attackAddPanel, BoxLayout.PAGE_AXIS));
+                  JLabel damageLabel = new JLabel("Damage:");
+                  damageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                  attackAddPanel.add(damageLabel);
+                  attackAddPanel.add(damageField);
+                  attackAddPanel.add(Box.createVerticalStrut(10));
+
+                  result = JOptionPane.showConfirmDialog(null, attackAddPanel,
+                      "Create Attack #" + (i + 1) + " of " + numAttacks, JOptionPane.OK_CANCEL_OPTION);
+                  if (result == JOptionPane.OK_OPTION) {
+                    if (infoField.getText().isEmpty() || damageField.getText().isEmpty()) {
+                      JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                      if (!Attack.isValid(infoField.getText())) {
+                        JOptionPane.showMessageDialog(popup, "Invalid attack info.", "Error", JOptionPane.ERROR_MESSAGE);
+                      } else {
+                        attackList.add(new Attack(infoField.getText(), damageField.getText()));
+                        break;
+                      }
+
+                    }
+                  } else {
+                    cancelled = true;
+                    break;
+                  }
+                }
+              }
+
+              if (!cancelled) {
+                Card newCard = new Card(nameField.getText(), hp, typeField.getText(), new Date(dateField.getText()), attackList);
+                System.out.println("Card added: " + newCard.getName() + " " + newCard.getHp() + " " + newCard.getType() + " " + newCard.getDate());
+              }
+
+            }
+          } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(popup, "Hp and attacks must be integers.", "Error", JOptionPane.ERROR_MESSAGE);
+          }
+        }
+
       }
     }
   }
@@ -619,7 +700,7 @@ public class Driver extends JPanel implements ActionListener {
       return new Album(albumNum, date, capacity, cards);
     } catch (FileNotFoundException e) {
       popup = new JFrame();
-      JOptionPane.showMessageDialog(popup, "File not found.");
+      JOptionPane.showMessageDialog(popup, "File not found.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     return null;
