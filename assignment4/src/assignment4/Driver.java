@@ -1,12 +1,11 @@
 // Ishaan Dey
-// April 14. 2023
-// Assignment 4 Part 2 (with graphics)
+// April 23, 2023
+// Assignment 4 Part 3 (with graphics)
 
 package assignment4;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.io.*;
 import javax.swing.*;
