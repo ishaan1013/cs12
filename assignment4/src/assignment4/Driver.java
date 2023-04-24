@@ -659,7 +659,7 @@ public class Driver extends JPanel implements ActionListener {
                     JPanel attackAddPanel = new JPanel();
 
                     attackAddPanel.setLayout(new BoxLayout(attackAddPanel, BoxLayout.PAGE_AXIS));
-                    JLabel infoLabel = new JLabel("Attack (SEPARATE NAME & DESC WITH '-'):");
+                    JLabel infoLabel = new JLabel("Attack (if adding desc, separate with -):");
                     infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                     attackAddPanel.add(infoLabel);
                     attackAddPanel.add(infoField);

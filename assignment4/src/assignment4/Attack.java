@@ -55,9 +55,8 @@ public class Attack {
       String desc = st.nextToken().trim();
       if (name.length() == 0 || desc.length() == 0) return false;
       return true;
-    } else {
-      return false;
     }
+    return !attackInfo.isEmpty();
   }
 
   // constructor splits up the name and description from the given info
