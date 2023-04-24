@@ -49,18 +49,22 @@ public class Album {
   }
 
   // add a card to the album
-  // takes in all the necessary info inputted by user
-  // returns the card to be added
-  public Card addCard(int hp, String name, String type, Date date, ArrayList<Attack> attacks) {
-    return null;
+  // takes in a pre-made card object
+  // void
+  public void addCard(Card c) {
+    cards.add(c);
   }
 
-  // choose how to sort, then the method sorts the cards with that info (either by the natural order or with a comparator)
-  // takes in the sorting type
-  // void (updates the instance variable)
-  public void sort(String sortBy) {
+  // remove a card from the album
+  // takes in a pre-made card object
+  // void
+  public void removeCard(Card c) {
+    cards.remove(c);
   }
 
+  // equals (mostly used in indexOf in Driver)
+  // parameter is an object to compare to
+  // returns if equal or not
   public boolean equals(Object o) {
     Album other = (Album) o;
     int num = other.getNum();

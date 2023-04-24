@@ -18,6 +18,19 @@ public class Date {
     return y;
   }
 
+  // equals (mostly used in indexOf in Driver)
+  // parameter is an object to compare to
+  // returns if equal or not
+  public boolean equals(Object o) {
+    Date other = (Date) o;
+    return this.m == (other.getMonth()) &&
+        this.d == other.getDay() &&
+        this.y == other.getYear();
+  }
+
+  // checks if a date string is valid (used before creating a Date object)
+  // parameter is a date string to verify
+  // returns if valid or not
   public static boolean isValid(String dateString) {
     String[] date = dateString.split("/");
 
@@ -43,28 +56,15 @@ public class Date {
     }
   }
 
+  // constructor
+  // parameter is a valid datestring, splits with /
   public Date(String dateString) {
-    // check invalid dates
-    // not used for this part of the assignment
     String[] date = dateString.split("/");
 
     try {
       int month = Integer.parseInt(date[0]);
       int day = Integer.parseInt(date[1]);
       int year = Integer.parseInt(date[2]);
-//      boolean error = false;
-//
-//      if (year < 0 || year > 2023) error = true;
-//      if (month < 1 || month > 12) error = true;
-//      if (month == 2) {
-//        if (day > 28) error = true;
-//      }
-//      if (month == 4 || month == 6 || month == 9 || month == 11) {
-//        if (day > 30) error = true;
-//      }
-//      if (day < 1 || day > 31) error = true;
-//
-//      if (!error) {
       m = month;
       d = day;
       y = year;
@@ -79,7 +79,7 @@ public class Date {
 
   // todo pad zeros
   public String toString() {
-    return m + "/" + d + "/" + y;
+    return String.format("%02d", m) + "/" + String.format("%02d", d) + "/" + String.format("%04d", y);
   }
 
 }

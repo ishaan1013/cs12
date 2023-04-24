@@ -34,6 +34,7 @@ public class Driver extends JPanel implements ActionListener {
   static ArrayList<Album> albums = new ArrayList<Album>();
   static ArrayList<JButton> albumButtons = new ArrayList<JButton>();
   Album selectedAlbum;
+  Card selectedCard;
 
   // driver constructor to initialize the frame & menus
   // no params
@@ -372,6 +373,7 @@ public class Driver extends JPanel implements ActionListener {
 
   }
 
+  // paintcomponent
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
   }
@@ -454,6 +456,10 @@ public class Driver extends JPanel implements ActionListener {
       cardHp.setText("Hp: ");
       cardType.setText("Type: ");
       cardDate.setText("Date: ");
+      attackName.setText("Name: ");
+      attackDesc.setText("Description: ");
+      attackDamage.setText("Damage: ");
+
 
     } else if (eventName.equals("stats")) {
 
@@ -468,46 +474,30 @@ public class Driver extends JPanel implements ActionListener {
       albumCards.setText("# Cards: ");
       albumTotalHp.setText("Total HP: ");
 
-      int index = Integer.parseInt(eventName.substring(6));
-      // todo eventName to be album number, and then find the album with that number using indexOf
-      System.out.println("selected album: " + index);
-      selectedAlbum = albums.get(albums.indexOf(new Album(index, null, 0, null)));
+      int selectedNum = Integer.parseInt(eventName.substring(6));
+//      System.out.println("selected album: " + selectedNum);
+      selectedAlbum = albums.get(albums.indexOf(new Album(selectedNum, null, 0, null)));
       albumMenuPanel.setVisible(false);
       cardsMenuPanel.setVisible(true);
       frame.setContentPane(cardsMenuPanel);
 
       albumsTitle.setText("Selected Album: " + selectedAlbum.getNum());
 
-      for (int i = 0; i < selectedAlbum.getCards().size(); i++) {
-        JPanel cardItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
-        JLabel cardName = new JLabel(selectedAlbum.getCards().get(i).getName());
-        cardName.setForeground(Color.WHITE);
-        JButton cardSelect = new JButton("→");
-        cardSelect.setMargin(new Insets(2, 3, 2, 3));
-        cardSelect.addActionListener(this);
-        cardSelect.setActionCommand("cardSelect" + i);
-        JButton cardRemove = new JButton("x");
-        cardRemove.setMargin(new Insets(2, 3, 2, 3));
-        cardRemove.addActionListener(this);
-        cardRemove.setActionCommand("cardRemove" + i);
-        cardItem.add(cardName);
-        cardItem.add(cardSelect);
-        cardItem.add(cardRemove);
-        cardItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
-        cardItem.setBackground(dark1);
-
-        cardList.add(cardItem);
-      }
-      cardList.revalidate();
+      refreshCards();
       cardsMenuList.revalidate();
     } else if (eventName.startsWith("cardSelect")) {
       // todo change to using card name or something instead of index, bc this will cause problems with indexing once we start removing cards
+      // ^ or keep using index, but then removeAll and re-add all the cards based on the updated list and indexes
       int index = Integer.parseInt(eventName.substring(10));
-      Card selectedCard = selectedAlbum.getCards().get(index);
+      selectedCard = selectedAlbum.getCards().get(index);
       cardName.setText("Card: " + selectedCard.getName());
       cardHp.setText("Hp: " + selectedCard.getHp());
       cardType.setText("Type: " + selectedCard.getType());
       cardDate.setText("Date: " + selectedCard.getDate().toString());
+
+      attackName.setText("Name: ");
+      attackDesc.setText("Description: ");
+      attackDamage.setText("Damage: ");
 
       attackList.removeAll();
 
@@ -535,11 +525,34 @@ public class Driver extends JPanel implements ActionListener {
       attackList.revalidate();
       cardsMenuAttacks.revalidate();
 
+    } else if (eventName.startsWith("attackSelect")) {
+      int index = Integer.parseInt(eventName.substring(12));
+      Attack selectedAttack = selectedCard.getAttacks().get(index);
+      attackName.setText("Name: " + selectedAttack.getName());
+      attackDesc.setText("Description: " + selectedAttack.getDesc());
+      attackDamage.setText("Damage: " + selectedAttack.getDamage());
+
     } else if (eventName.equals("cardSort")) {
       String[] options = {"Sort by name", "Sort by hp", "Sort by date"};
-      String n = (String) JOptionPane.showInputDialog(null, "Choose Sorting Option",
+      String sortOption = (String) JOptionPane.showInputDialog(null, "Choose Sorting Option",
           null, JOptionPane.QUESTION_MESSAGE, null, options, options[2]);
-      System.out.println(n);
+      if (sortOption != null) {
+        cardList.removeAll();
+
+        if (sortOption.equals("Sort by name")) {
+          Collections.sort(selectedAlbum.getCards());
+        } else if (sortOption.equals("Sort by hp")) {
+          Collections.sort(selectedAlbum.getCards(), new compareByHp());
+        } else if (sortOption.equals("Sort by date")) {
+          Collections.sort(selectedAlbum.getCards(), new compareByDate());
+        }
+
+//        albums.set(albums.indexOf(new Album(selectedAlbum.getNum(), null, 0, null)), selectedAlbum);
+
+        refreshCards();
+
+
+      }
 
     } else if (eventName.equals("cardAdd")) {
       JTextField nameField = new JTextField(5);
@@ -612,7 +625,6 @@ public class Driver extends JPanel implements ActionListener {
                   attackAddPanel.add(infoLabel);
                   attackAddPanel.add(infoField);
                   attackAddPanel.add(Box.createVerticalStrut(10));
-                  attackAddPanel.setLayout(new BoxLayout(attackAddPanel, BoxLayout.PAGE_AXIS));
                   JLabel damageLabel = new JLabel("Damage:");
                   damageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                   attackAddPanel.add(damageLabel);
@@ -642,7 +654,9 @@ public class Driver extends JPanel implements ActionListener {
 
               if (!cancelled) {
                 Card newCard = new Card(nameField.getText(), hp, typeField.getText(), new Date(dateField.getText()), attackList);
-                System.out.println("Card added: " + newCard.getName() + " " + newCard.getHp() + " " + newCard.getType() + " " + newCard.getDate());
+//                System.out.println("Card added: " + newCard.getName() + " " + newCard.getHp() + " " + newCard.getType() + " " + newCard.getDate());
+                selectedAlbum.addCard(newCard);
+                refreshCards();
               }
 
             }
@@ -652,7 +666,104 @@ public class Driver extends JPanel implements ActionListener {
         }
 
       }
+    } else if (eventName.startsWith("cardRemove")) {
+      int index = Integer.parseInt(eventName.substring(10));
+
+      Card selectedCard = selectedAlbum.getCards().get(index);
+      selectedAlbum.removeCard(selectedCard);
+
+      cardName.setText("Card: ");
+      cardHp.setText("Hp: ");
+      cardType.setText("Type: ");
+      cardDate.setText("Date: ");
+      attackName.setText("Name: ");
+      attackDesc.setText("Description: ");
+      attackDamage.setText("Damage: ");
+
+      attackList.removeAll();
+      attackList.revalidate();
+
+      refreshCards();
+
+
+    } else if (eventName.startsWith("attackEdit")) {
+      int index = Integer.parseInt(eventName.substring(10));
+      Attack selectedAttack = selectedCard.getAttacks().get(index);
+
+      JTextField nameField = new JTextField(selectedAttack.getName(), 5);
+      JTextField descField = new JTextField(selectedAttack.getDesc(), 5);
+      JTextField damageField = new JTextField(selectedAttack.getDamage(), 5);
+      JPanel attackAddPanel = new JPanel();
+
+      attackAddPanel.setLayout(new BoxLayout(attackAddPanel, BoxLayout.PAGE_AXIS));
+      JLabel nameLabel = new JLabel("Name:");
+      nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      attackAddPanel.add(nameLabel);
+      attackAddPanel.add(nameField);
+      attackAddPanel.add(Box.createVerticalStrut(10));
+      JLabel descLabel = new JLabel("Description:");
+      descLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      attackAddPanel.add(descLabel);
+      attackAddPanel.add(descField);
+      attackAddPanel.add(Box.createVerticalStrut(10));
+      JLabel damageLabel = new JLabel("Damage:");
+      damageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+      attackAddPanel.add(damageLabel);
+      attackAddPanel.add(damageField);
+      attackAddPanel.add(Box.createVerticalStrut(10));
+
+      int result = JOptionPane.showConfirmDialog(null, attackAddPanel,
+          "Editing Attack", JOptionPane.OK_CANCEL_OPTION);
+      if (result == JOptionPane.OK_OPTION) {
+        popup = new JFrame();
+        if (nameField.getText().isEmpty() || descField.getText().isEmpty() || damageField.getText().isEmpty()) {
+          JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+          attackName.setText("Name: " + nameField.getText());
+          attackDesc.setText("Description: " + descField.getText());
+          attackDamage.setText("Damage: " + damageField.getText());
+
+          selectedAttack.setName(nameField.getText());
+          selectedAttack.setDesc(descField.getText());
+          selectedAttack.setDamage(damageField.getText());
+
+          selectedCard.getAttacks().set(index, selectedAttack);
+          selectedAlbum.getCards().set(selectedAlbum.getCards().indexOf(selectedCard), selectedCard);
+//          albums.set(albums.indexOf(new Album(selectedAlbum.getNum(), null, 0, null)), selectedAlbum);
+
+
+        }
+      }
     }
+  }
+
+  // refreshes the card list, called after adding/removing/sorting cards so indexes on listeners stay working
+  // no params, uses global graphics components
+  // void
+  public void refreshCards() {
+    cardList.removeAll();
+    for (int i = 0; i < selectedAlbum.getCards().size(); i++) {
+      JPanel cardItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
+      JLabel cardName = new JLabel(selectedAlbum.getCards().get(i).getName());
+      cardName.setForeground(Color.WHITE);
+      JButton cardSelect = new JButton("→");
+      cardSelect.setMargin(new Insets(2, 3, 2, 3));
+      cardSelect.addActionListener(this);
+      cardSelect.setActionCommand("cardSelect" + i);
+      JButton cardRemove = new JButton("x");
+      cardRemove.setMargin(new Insets(2, 3, 2, 3));
+      cardRemove.addActionListener(this);
+      cardRemove.setActionCommand("cardRemove" + i);
+      cardItem.add(cardName);
+      cardItem.add(cardSelect);
+      cardItem.add(cardRemove);
+      cardItem.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+      cardItem.setBackground(dark1);
+
+      cardList.add(cardItem);
+
+    }
+    cardList.revalidate();
   }
 
   // add a new album

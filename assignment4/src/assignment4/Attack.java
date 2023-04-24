@@ -20,6 +20,30 @@ public class Attack {
     return damage;
   }
 
+  // setter methods
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setDesc(String desc) {
+    this.desc = desc;
+  }
+
+  public void setDamage(String damage) {
+    this.damage = damage;
+  }
+
+  // equals (mostly used in indexOf in Driver)
+  // parameter is an object to compare to
+  // returns if equal or not
+  public boolean equals(Object o) {
+    Attack other = (Attack) o;
+    return this.name.equals(other.getName()) &&
+        this.desc.equals(other.getDesc()) &&
+        this.damage.equals(other.getDamage());
+  }
+
   public static boolean isValid(String attackInfo) {
     if (attackInfo.contains("-") || attackInfo.contains("–")) {
       StringTokenizer st = new StringTokenizer(attackInfo, "-–");
