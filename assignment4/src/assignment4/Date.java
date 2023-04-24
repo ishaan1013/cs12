@@ -61,19 +61,13 @@ public class Date {
   public Date(String dateString) {
     String[] date = dateString.split("/");
 
-    try {
-      int month = Integer.parseInt(date[0]);
-      int day = Integer.parseInt(date[1]);
-      int year = Integer.parseInt(date[2]);
-      m = month;
-      d = day;
-      y = year;
-//      }
+    int month = Integer.parseInt(date[0]);
+    int day = Integer.parseInt(date[1]);
+    int year = Integer.parseInt(date[2]);
+    m = month;
+    d = day;
+    y = year;
 
-
-    } catch (NumberFormatException e) {
-      //something
-    }
 
   }
 

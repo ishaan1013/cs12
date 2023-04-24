@@ -44,6 +44,9 @@ public class Attack {
         this.damage.equals(other.getDamage());
   }
 
+  // checks if an attack info string is valid (used before creating an Attack object)
+  // parameter is an info string to check
+  // returns if valid or not
   public static boolean isValid(String attackInfo) {
     if (attackInfo.contains("-") || attackInfo.contains("–")) {
       StringTokenizer st = new StringTokenizer(attackInfo, "-–");

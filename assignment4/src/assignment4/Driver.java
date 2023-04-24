@@ -409,7 +409,7 @@ public class Driver extends JPanel implements ActionListener {
           final int labelNum = albums.get(i).getNum();
           final String labelDate = albums.get(i).getDate().toString();
           final int labelCapacity = albums.get(i).getCapacity();
-          final int labelCards = albums.size();
+          final int labelCards = albums.get(i).getNumCards();
           final int labelHp = albums.get(i).getHp();
           jb.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -460,6 +460,37 @@ public class Driver extends JPanel implements ActionListener {
       attackDesc.setText("Description: ");
       attackDamage.setText("Damage: ");
 
+      // refresh the album buttons (need to update the hover listeners with new total Hp and number of cards)
+
+      albumListPanel.removeAll();
+      albumButtons.clear();
+
+      for (Album album : albums) {
+        JButton jb = new JButton(album.getNum() + "");
+        jb.setPreferredSize(new Dimension(40, 40));
+        jb.addActionListener(this);
+        jb.setActionCommand("select" + album.getNum());
+        final int labelNum = album.getNum();
+        final String labelDate = album.getDate().toString();
+        final int labelCapacity = album.getCapacity();
+        final int labelCards = album.getNumCards();
+        final int labelHp = album.getHp();
+        jb.addMouseListener(new MouseAdapter() {
+          public void mouseEntered(MouseEvent evt) {
+            albumNum.setText("Album #: " + labelNum);
+            albumDate.setText("Date: " + labelDate);
+            albumCapacity.setText("Capacity: " + labelCapacity);
+            albumCards.setText("# Cards: " + labelCards);
+            albumTotalHp.setText("Total HP: " + labelHp);
+          }
+        });
+
+        albumButtons.add(jb);
+
+        albumListPanel.add(jb);
+        albumListPanel.revalidate();
+      }
+
 
     } else if (eventName.equals("stats")) {
 
@@ -500,6 +531,8 @@ public class Driver extends JPanel implements ActionListener {
       attackDamage.setText("Damage: ");
 
       attackList.removeAll();
+
+      // display all attacks of the selected card
 
       for (int i = 0; i < selectedCard.getAttacks().size(); i++) {
         JPanel attackItem = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
@@ -555,122 +588,131 @@ public class Driver extends JPanel implements ActionListener {
       }
 
     } else if (eventName.equals("cardAdd")) {
-      JTextField nameField = new JTextField(5);
-      JTextField hpField = new JTextField(5);
-      JTextField typeField = new JTextField(5);
-      JTextField attacksField = new JTextField(5);
-      JTextField dateField = new JTextField(5);
-      JPanel cardAddPanel = new JPanel();
-
-      cardAddPanel.setLayout(new BoxLayout(cardAddPanel, BoxLayout.PAGE_AXIS));
-      JLabel nameLabel = new JLabel("Card Name:");
-      nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-      cardAddPanel.add(nameLabel);
-      cardAddPanel.add(nameField);
-      cardAddPanel.add(Box.createVerticalStrut(10));
-      JLabel hpLabel = new JLabel("Card HP:");
-      hpLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-      cardAddPanel.add(hpLabel);
-      cardAddPanel.add(hpField);
-      cardAddPanel.add(Box.createVerticalStrut(10));
-      JLabel typeLabel = new JLabel("Card Type:");
-      typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-      cardAddPanel.add(typeLabel);
-      cardAddPanel.add(typeField);
-      cardAddPanel.add(Box.createVerticalStrut(10));
-      JLabel attacksLabel = new JLabel("# of Attacks:");
-      attacksLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-      cardAddPanel.add(attacksLabel);
-      cardAddPanel.add(attacksField);
-      cardAddPanel.add(Box.createVerticalStrut(10));
-      JLabel dateLabel = new JLabel("Date (mm/dd/yyyy):");
-      dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-      cardAddPanel.add(dateLabel);
-      cardAddPanel.add(dateField);
-      cardAddPanel.add(Box.createVerticalStrut(10));
-
-
-      int result = JOptionPane.showConfirmDialog(null, cardAddPanel,
-          "Create A Card", JOptionPane.OK_CANCEL_OPTION);
-      if (result == JOptionPane.OK_OPTION) {
+      if (selectedAlbum.getCapacity() == selectedAlbum.getCards().size()) {
         popup = new JFrame();
-        if (nameField.getText().isEmpty() || hpField.getText().isEmpty() || typeField.getText().isEmpty() || attacksField.getText().isEmpty() || dateField.getText().isEmpty()) {
-          JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-          try {
-            int hp = Integer.parseInt(hpField.getText());
-            int attacks = Integer.parseInt(attacksField.getText());
-            if (hp < 0 || attacks < 0) {
-              JOptionPane.showMessageDialog(popup, "Hp and attacks must be positive.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (!Date.isValid(dateField.getText())) {
-              JOptionPane.showMessageDialog(popup, "Invalid Date.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(popup, "Reached max capacity. Free up space before adding another card.", "Error", JOptionPane.ERROR_MESSAGE);
+      } else {
+        JTextField nameField = new JTextField(5);
+        JTextField hpField = new JTextField(5);
+        JTextField typeField = new JTextField(5);
+        JTextField attacksField = new JTextField(5);
+        JTextField dateField = new JTextField(5);
+        JPanel cardAddPanel = new JPanel();
 
-            } else {
+        cardAddPanel.setLayout(new BoxLayout(cardAddPanel, BoxLayout.PAGE_AXIS));
+        JLabel nameLabel = new JLabel("Card Name:");
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cardAddPanel.add(nameLabel);
+        cardAddPanel.add(nameField);
+        cardAddPanel.add(Box.createVerticalStrut(10));
+        JLabel hpLabel = new JLabel("Card HP:");
+        hpLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cardAddPanel.add(hpLabel);
+        cardAddPanel.add(hpField);
+        cardAddPanel.add(Box.createVerticalStrut(10));
+        JLabel typeLabel = new JLabel("Card Type:");
+        typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cardAddPanel.add(typeLabel);
+        cardAddPanel.add(typeField);
+        cardAddPanel.add(Box.createVerticalStrut(10));
+        JLabel attacksLabel = new JLabel("# of Attacks:");
+        attacksLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cardAddPanel.add(attacksLabel);
+        cardAddPanel.add(attacksField);
+        cardAddPanel.add(Box.createVerticalStrut(10));
+        JLabel dateLabel = new JLabel("Date (mm/dd/yyyy):");
+        dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cardAddPanel.add(dateLabel);
+        cardAddPanel.add(dateField);
+        cardAddPanel.add(Box.createVerticalStrut(10));
 
-              ArrayList<Attack> attackList = new ArrayList<Attack>();
-              int numAttacks = Integer.parseInt(attacksField.getText());
-              boolean cancelled = false;
-              for (int i = 0; i < numAttacks; i++) {
-                if (cancelled) {
-                  break;
-                }
-                while (true) {
-                  JTextField infoField = new JTextField(5);
-                  JTextField damageField = new JTextField(5);
-                  JPanel attackAddPanel = new JPanel();
 
-                  attackAddPanel.setLayout(new BoxLayout(attackAddPanel, BoxLayout.PAGE_AXIS));
-                  JLabel infoLabel = new JLabel("Attack (SEPARATE NAME & DESC WITH '-'):");
-                  infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                  attackAddPanel.add(infoLabel);
-                  attackAddPanel.add(infoField);
-                  attackAddPanel.add(Box.createVerticalStrut(10));
-                  JLabel damageLabel = new JLabel("Damage:");
-                  damageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                  attackAddPanel.add(damageLabel);
-                  attackAddPanel.add(damageField);
-                  attackAddPanel.add(Box.createVerticalStrut(10));
+        int result = JOptionPane.showConfirmDialog(null, cardAddPanel,
+            "Create A Card", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+          popup = new JFrame();
+          // lots of error checking below
 
-                  result = JOptionPane.showConfirmDialog(null, attackAddPanel,
-                      "Create Attack #" + (i + 1) + " of " + numAttacks, JOptionPane.OK_CANCEL_OPTION);
-                  if (result == JOptionPane.OK_OPTION) {
-                    if (infoField.getText().isEmpty() || damageField.getText().isEmpty()) {
-                      JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                      if (!Attack.isValid(infoField.getText())) {
-                        JOptionPane.showMessageDialog(popup, "Invalid attack info.", "Error", JOptionPane.ERROR_MESSAGE);
-                      } else {
-                        attackList.add(new Attack(infoField.getText(), damageField.getText()));
-                        break;
-                      }
+          if (nameField.getText().isEmpty() || hpField.getText().isEmpty() || typeField.getText().isEmpty() || attacksField.getText().isEmpty() || dateField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
+          } else {
+            try {
+              int hp = Integer.parseInt(hpField.getText());
+              int attacks = Integer.parseInt(attacksField.getText());
+              if (hp < 0 || attacks < 0) {
+                JOptionPane.showMessageDialog(popup, "Hp and attacks must be positive.", "Error", JOptionPane.ERROR_MESSAGE);
+              } else if (!Date.isValid(dateField.getText())) {
+                JOptionPane.showMessageDialog(popup, "Invalid Date.", "Error", JOptionPane.ERROR_MESSAGE);
 
-                    }
-                  } else {
-                    cancelled = true;
+              } else {
+
+                ArrayList<Attack> attackList = new ArrayList<Attack>();
+                int numAttacks = Integer.parseInt(attacksField.getText());
+                boolean cancelled = false;
+                for (int i = 0; i < numAttacks; i++) {
+                  if (cancelled) {
                     break;
                   }
+                  while (true) {
+                    JTextField infoField = new JTextField(5);
+                    JTextField damageField = new JTextField(5);
+                    JPanel attackAddPanel = new JPanel();
+
+                    attackAddPanel.setLayout(new BoxLayout(attackAddPanel, BoxLayout.PAGE_AXIS));
+                    JLabel infoLabel = new JLabel("Attack (SEPARATE NAME & DESC WITH '-'):");
+                    infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    attackAddPanel.add(infoLabel);
+                    attackAddPanel.add(infoField);
+                    attackAddPanel.add(Box.createVerticalStrut(10));
+                    JLabel damageLabel = new JLabel("Damage:");
+                    damageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    attackAddPanel.add(damageLabel);
+                    attackAddPanel.add(damageField);
+                    attackAddPanel.add(Box.createVerticalStrut(10));
+
+                    result = JOptionPane.showConfirmDialog(null, attackAddPanel,
+                        "Create Attack #" + (i + 1) + " of " + numAttacks, JOptionPane.OK_CANCEL_OPTION);
+                    if (result == JOptionPane.OK_OPTION) {
+                      if (infoField.getText().isEmpty() || damageField.getText().isEmpty()) {
+                        JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
+                      } else {
+                        if (!Attack.isValid(infoField.getText())) {
+                          JOptionPane.showMessageDialog(popup, "Invalid attack info.", "Error", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                          attackList.add(new Attack(infoField.getText(), damageField.getText()));
+                          break;
+                        }
+
+                      }
+                    } else {
+                      cancelled = true;
+                      break;
+                    }
+                  }
                 }
-              }
 
-              if (!cancelled) {
-                Card newCard = new Card(nameField.getText(), hp, typeField.getText(), new Date(dateField.getText()), attackList);
+                if (!cancelled) {
+                  Card newCard = new Card(nameField.getText(), hp, typeField.getText(), new Date(dateField.getText()), attackList);
 //                System.out.println("Card added: " + newCard.getName() + " " + newCard.getHp() + " " + newCard.getType() + " " + newCard.getDate());
-                selectedAlbum.addCard(newCard);
-                refreshCards();
+                  selectedAlbum.addCard(newCard);
+                  refreshCards();
+                }
+
               }
-
+            } catch (NumberFormatException e) {
+              JOptionPane.showMessageDialog(popup, "Hp and attacks must be integers.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-          } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(popup, "Hp and attacks must be integers.", "Error", JOptionPane.ERROR_MESSAGE);
           }
-        }
 
+        }
       }
     } else if (eventName.startsWith("cardRemove")) {
       int index = Integer.parseInt(eventName.substring(10));
 
       Card selectedCard = selectedAlbum.getCards().get(index);
       selectedAlbum.removeCard(selectedCard);
+
+      // reset displayed info since card was removed (to be safe)
 
       cardName.setText("Card: ");
       cardHp.setText("Hp: ");
@@ -719,6 +761,7 @@ public class Driver extends JPanel implements ActionListener {
         if (nameField.getText().isEmpty() || descField.getText().isEmpty() || damageField.getText().isEmpty()) {
           JOptionPane.showMessageDialog(popup, "Fill in all text fields.", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
+          // make all updates for the verified attack
           attackName.setText("Name: " + nameField.getText());
           attackDesc.setText("Description: " + descField.getText());
           attackDamage.setText("Damage: " + damageField.getText());

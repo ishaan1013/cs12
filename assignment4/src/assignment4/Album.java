@@ -23,6 +23,10 @@ public class Album {
     return cards;
   }
 
+  public int getNumCards() {
+    return cards.size();
+  }
+
   public int getHp() {
     return hp;
   }
@@ -53,6 +57,7 @@ public class Album {
   // void
   public void addCard(Card c) {
     cards.add(c);
+    hp += c.getHp();
   }
 
   // remove a card from the album
@@ -60,6 +65,7 @@ public class Album {
   // void
   public void removeCard(Card c) {
     cards.remove(c);
+    hp -= c.getHp();
   }
 
   // equals (mostly used in indexOf in Driver)

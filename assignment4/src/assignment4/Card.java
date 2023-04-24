@@ -40,7 +40,7 @@ public class Card implements Comparable<Card> {
   }
 
   // equals (mostly used in indexOf in Driver)
-  // parameter is an object to compare to
+  // parameter is an object to compare with
   // returns if equal or not
   public boolean equals(Object o) {
     Card other = (Card) o;
@@ -57,7 +57,9 @@ public class Card implements Comparable<Card> {
         this.date.equals(other.getDate());
   }
 
-  // natural sorting order
+  // compareTo for natural sorting order (by name)
+  // parameter is a card to compare with
+  // returns an int neg/0/pos based on result
   public int compareTo(Card other) {
     return this.name.compareTo(other.name);
   }
