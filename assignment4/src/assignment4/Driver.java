@@ -21,7 +21,7 @@ public class Driver extends JPanel implements ActionListener {
 
   // screen 1
   JPanel albumMenuPanel, albumListPanel;
-  JLabel albumNum, albumDate, albumCapacity, albumCards, albumTotalHp;
+  JLabel albumNum, albumDate, albumCapacity, albumCards, albumTotalHp, albumAvgHp, albumOutOf;
   JButton albumAdd, albumStats, exit;
 
   // screen 2
@@ -141,30 +141,39 @@ public class Driver extends JPanel implements ActionListener {
     albumCapacity = new JLabel("Capacity: ");
     albumCards = new JLabel("# Cards: ");
     albumTotalHp = new JLabel("Total HP: ");
+    albumAvgHp = new JLabel("Avg HP: ");
+    albumOutOf = new JLabel("_ out of _");
 
     albumNum.setFont(new Font("Helvetica", Font.PLAIN, 16));
     albumDate.setFont(new Font("Helvetica", Font.PLAIN, 16));
     albumCapacity.setFont(new Font("Helvetica", Font.PLAIN, 16));
     albumCards.setFont(new Font("Helvetica", Font.PLAIN, 16));
     albumTotalHp.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    albumAvgHp.setFont(new Font("Helvetica", Font.PLAIN, 16));
+    albumOutOf.setFont(new Font("Helvetica", Font.PLAIN, 16));
 
     albumNum.setForeground(Color.WHITE);
     albumDate.setForeground(Color.WHITE);
     albumCapacity.setForeground(Color.WHITE);
     albumCards.setForeground(Color.WHITE);
     albumTotalHp.setForeground(Color.WHITE);
+    albumAvgHp.setForeground(Color.WHITE);
+    albumOutOf.setForeground(Color.WHITE);
 
     JLabel hoveredLabel = new JLabel("Hovered Album:");
-    hoveredLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
     hoveredLabel.setFont(new Font("Helvetica", Font.BOLD, 16));
     hoveredLabel.setForeground(Color.WHITE);
 
     albumInfoPanel.add(hoveredLabel);
+    albumInfoPanel.add(Box.createRigidArea(new Dimension(0, 12)));
     albumInfoPanel.add(albumNum);
     albumInfoPanel.add(albumDate);
     albumInfoPanel.add(albumCapacity);
     albumInfoPanel.add(albumCards);
     albumInfoPanel.add(albumTotalHp);
+    albumInfoPanel.add(Box.createRigidArea(new Dimension(0, 12)));
+    albumInfoPanel.add(albumAvgHp);
+    albumInfoPanel.add(albumOutOf);
 
     albumMenuPanel.add(albumInfoPanel, c);
 
@@ -410,6 +419,7 @@ public class Driver extends JPanel implements ActionListener {
           final int labelCapacity = albums.get(i).getCapacity();
           final int labelCards = albums.get(i).getNumCards();
           final int labelHp = albums.get(i).getHp();
+          final double labelAvg = (double) albums.get(i).getHp() / albums.get(i).getNumCards();
           jb.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
               albumNum.setText("Album #: " + labelNum);
@@ -417,6 +427,8 @@ public class Driver extends JPanel implements ActionListener {
               albumCapacity.setText("Capacity: " + labelCapacity);
               albumCards.setText("# Cards: " + labelCards);
               albumTotalHp.setText("Total HP: " + labelHp);
+              albumAvgHp.setText("Avg HP: " + String.format("%.2f", labelAvg));
+              albumOutOf.setText(labelCards + " out of " + labelCapacity);
             }
           });
 
@@ -474,13 +486,16 @@ public class Driver extends JPanel implements ActionListener {
         final int labelCapacity = album.getCapacity();
         final int labelCards = album.getNumCards();
         final int labelHp = album.getHp();
-        jb.addMouseListener(new MouseAdapter() {
-          public void mouseEntered(MouseEvent evt) {
+        final double labelAvg = (double) album.getHp() / album.getNumCards();
+        jb.addMouseListener(new java.awt.event.MouseAdapter() {
+          public void mouseEntered(java.awt.event.MouseEvent evt) {
             albumNum.setText("Album #: " + labelNum);
             albumDate.setText("Date: " + labelDate);
             albumCapacity.setText("Capacity: " + labelCapacity);
             albumCards.setText("# Cards: " + labelCards);
             albumTotalHp.setText("Total HP: " + labelHp);
+            albumAvgHp.setText("Avg HP: " + String.format("%.2f", labelAvg));
+            albumOutOf.setText(labelCards + " out of " + labelCapacity);
           }
         });
 
@@ -494,7 +509,20 @@ public class Driver extends JPanel implements ActionListener {
     } else if (eventName.equals("stats")) {
 
       popup = new JFrame();
-      JOptionPane.showMessageDialog(popup, "Stats.");
+
+      if (albums.size() == 0) {
+        JOptionPane.showMessageDialog(popup, "No albums to show stats for.");
+      } else {
+        int totalCards = 0;
+        int totalHp = 0;
+        int totalCapacity = 0;
+        for (Album album : albums) {
+          totalCards += album.getNumCards();
+          totalHp += album.getHp();
+          totalCapacity += album.getCapacity();
+        }
+        JOptionPane.showMessageDialog(popup, "Avg HP: " + String.format("%.2f", (double) totalHp / totalCards) + "\n" + totalCards + " out of " + totalCapacity);
+      }
 
     } else if (eventName.startsWith("select")) {
       // reset the hovered info
@@ -503,6 +531,8 @@ public class Driver extends JPanel implements ActionListener {
       albumCapacity.setText("Capacity: ");
       albumCards.setText("# Cards: ");
       albumTotalHp.setText("Total HP: ");
+      albumAvgHp.setText("Avg HP: ");
+      albumOutOf.setText("_ out of _");
 
       int selectedNum = Integer.parseInt(eventName.substring(6));
 //      System.out.println("selected album: " + selectedNum);
