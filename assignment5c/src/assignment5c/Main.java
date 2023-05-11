@@ -5,19 +5,18 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.util.*;
 import java.io.*;
-import java.util.List;
 import javax.imageio.*;
 import javax.swing.*;
 
 public class Main {
-
   static JFrame frame;
   static JPanel contentPanel, headerPanel, mainPanel, cardPanel;
   static Box cardBox;
+  static JLabel lab;
 
   static Color black = new Color(0x000000);
   static Color dark = new Color(0x1f1f1f);
-  static Color light = new Color(0xcfcfcf);
+  //  static Color light = new Color(0xcfcfcf);
   static Color white = new Color(0xffffff);
 
   public static void initHeader() {
@@ -34,47 +33,63 @@ public class Main {
     for (int i = 0; i < 26; i++) {
       country[i] = Integer.toString(i);
     }
-    JComboBox<String> b1 = new JComboBox<>(country);
+    JComboBox<String> cb = new JComboBox<>(country);
+    JButton b1 = new JButton("Confirm");
+    b1.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        int selected = Integer.parseInt(cb.getItemAt(cb.getSelectedIndex()));
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 1; i <= selected; i++) {
+          stack.push(i);
+        }
+        LinkedList<Integer> cards = new LinkedList<>();
+        for (int i = 0; i < selected; i++) {
+          if (cards.size() > 0) {
+            int last = cards.removeLast();
+            cards.addFirst(last);
+          }
+          cards.addFirst(stack.pop());
+        }
+
+        cardBox.removeAll();
+        for (int card : cards) {
+          BufferedImage img;
+          try {
+            img = ImageIO.read(new File("images/card" + card + ".png"));
+            JLabel imgLabel = new JLabel(new ImageIcon(img.getScaledInstance(150, 90, Image.SCALE_FAST)));
+            cardBox.add(imgLabel);
+          } catch (IOException ex) {
+            System.out.println("image file error: " + ex);
+          }
+        }
+        cardBox.revalidate();
+      }
+    });
 
     numCardsPanel.add(numLabel);
-    numCardsPanel.add(Box.createHorizontalStrut(10));
+    numCardsPanel.add(cb);
     numCardsPanel.add(b1);
     numCardsPanel.setBackground(black);
 
     JButton b2 = new JButton("Exit");
+    b2.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        System.exit(0);
+      }
+    });
 
     headerPanel.add(numCardsPanel);
     headerPanel.add(Box.createHorizontalGlue());
     headerPanel.add(b2);
   }
 
-  public static void initMain() throws IOException {
+  public static void initMain() {
     mainPanel = new JPanel();
     mainPanel.setBackground(dark);
     mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
     mainPanel.setPreferredSize(new Dimension(frame.getWidth(), 550));
 
     cardBox = Box.createVerticalBox();
-
-    Stack<Integer> stack = new Stack<>();
-    for (int i = 1; i <= 8; i++) {
-      stack.push(i);
-    }
-    LinkedList<Integer> cards = new LinkedList<>();
-    for (int i = 0; i < 8; i++) {
-      if (cards.size() > 0) {
-        int last = cards.removeLast();
-        cards.addFirst(last);
-      }
-      cards.addFirst(stack.pop());
-    }
-
-    for (int card : cards) {
-      BufferedImage img = ImageIO.read(new File("images/card" + card + ".png"));
-      JLabel imgLabel = new JLabel(new ImageIcon(img.getScaledInstance(150, 90, Image.SCALE_FAST)));
-      cardBox.add(imgLabel);
-
-    }
 
     cardBox.setBackground(dark);
     cardPanel = new JPanel();
