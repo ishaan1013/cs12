@@ -108,7 +108,7 @@ public class Main {
 
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     frame = new JFrame("Assignment 5C");
     frame.setPreferredSize(new Dimension(400, 600));
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
