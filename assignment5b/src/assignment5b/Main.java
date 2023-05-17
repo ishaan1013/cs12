@@ -15,13 +15,25 @@ public class Main {
             try {
                 System.out.print("Enter the maximum denominator: ");
                 maxD = Integer.parseInt(br.readLine());
+                if (maxD < 1) {
+                    System.out.println("Denominator must be greater than 0. Try again.\n");
+                    continue;
+                }
                 System.out.print("Enter the lower limit: ");
                 lowerInput = br.readLine().split("/");
                 if (lowerInput.length != 2) {
-                    System.out.println("Please enter valid numbers/fractions. Try again.\n-");
+                    System.out.println("Please enter valid numbers/fractions. Try again.\n");
                     continue;
                 }
                 lower = Double.parseDouble(lowerInput[0]) / Double.parseDouble(lowerInput[1]);
+                if (Double.parseDouble(lowerInput[1]) < 1) {
+                    System.out.println("Denominator must be greater than 0. Try again.\n");
+                    continue;
+                }
+                if (lower < 0 || lower > 1) {
+                    System.out.println("Only values between 0 and 1 inclusive.\n");
+                    continue;
+                }
                 System.out.print("Enter the upper limit: ");
                 upperInput = br.readLine().split("/");
                 if (upperInput.length != 2) {
@@ -29,6 +41,18 @@ public class Main {
                     continue;
                 }
                 upper = Double.parseDouble(upperInput[0]) / Double.parseDouble(upperInput[1]);
+                if (Double.parseDouble(upperInput[1]) < 1) {
+                    System.out.println("Denominator must be greater than 0. Try again.\n");
+                    continue;
+                }
+                if (upper < 0 || upper > 1) {
+                    System.out.println("Only values between 0 and 1 inclusive.\n");
+                    continue;
+                }
+                if (upper <= lower) {
+                    System.out.println("Upper limit has to be HIGHER than the lower limit. Try again.\n");
+                    continue;
+                }
                 break;
             } catch (NumberFormatException e) {
                 System.out.println("Please enter valid numbers/fractions. Try again.\n");
