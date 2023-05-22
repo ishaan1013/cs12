@@ -10,8 +10,8 @@ import javax.swing.*;
 
 public class Main {
     static JFrame frame;
-    static JPanel contentPanel, headerPanel, mainPanel, cardPanel, statsPanel;
-    static Box cardBox, statsBox;
+    static JPanel contentPanel, headerPanel, mainPanel, textPanel, statsPanel;
+    static Box textBox, statsBox;
 
     static Color black = new Color(0x000000);
     static Color dark = new Color(0x111111);
@@ -27,51 +27,45 @@ public class Main {
 
         JPanel numCardsPanel = new JPanel();
         numCardsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        JLabel numLabel = new JLabel("# Cards");
+        JLabel numLabel = new JLabel("Book");
         numLabel.setForeground(white);
-        String[] country = new String[26];
-        for (int i = 0; i < 26; i++) {
-            country[i] = Integer.toString(i);
-        }
-        JComboBox<String> cb = new JComboBox<>(country);
+        JComboBox<String> cb = new JComboBox<>(new String[] {"ALICE", "MOBY"});
         JButton b1 = new JButton("Confirm");
-//        b1.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//                int selected = Integer.parseInt(cb.getItemAt(cb.getSelectedIndex()));
-//                Stack<Integer> stack = new Stack<>();
-//                for (int i = 1; i <= selected; i++) {
-//                    stack.push(i);
-//                }
-//                LinkedList<Integer> cards = new LinkedList<>();
-//                for (int i = 0; i < selected; i++) {
-//                    if (cards.size() > 0) {
-//                        int last = cards.removeLast();
-//                        cards.addFirst(last);
-//                    }
-//                    cards.addFirst(stack.pop());
-//                }
-//
-//                cardBox.removeAll();
-//                for (int card : cards) {
-//                    BufferedImage img;
-//                    try {
-//                        img = ImageIO.read(new File("images/card" + card + ".png"));
-//                        JLabel imgLabel = new JLabel(new ImageIcon(img.getScaledInstance(150, 90, Image.SCALE_FAST)));
-//                        cardBox.add(imgLabel);
-//                    } catch (IOException ex) {
-//                        System.out.println("image file error: " + ex);
-//                    }
-//                }
-//                cardBox.revalidate();
-//            }
-//        });
+        b1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selected = cb.getItemAt(cb.getSelectedIndex());
+
+                textBox.removeAll();
+
+                String line = "";
+                try {
+                    Scanner inFile = new Scanner (new File (selected + ".txt"));
+                    while (inFile.hasNextLine ()) {
+                        line = inFile.nextLine();
+                        JLabel l = new JLabel(line);
+                        l.setForeground(white);
+                        textBox.add(l);
+                    }
+                    inFile.close ();
+                }
+                catch (FileNotFoundException ex) {
+                    System.out.println ("File does not exist");
+                }
+
+                textBox.revalidate();
+            }
+        });
 
         JButton b2 = new JButton("Add File");
 
         numCardsPanel.add(numLabel);
         numCardsPanel.add(cb);
         numCardsPanel.add(b1);
-        numCardsPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        numCardsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        JLabel orLabel = new JLabel("or");
+        orLabel.setForeground(white);
+        numCardsPanel.add(orLabel);
+        numCardsPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         numCardsPanel.add(b2);
         numCardsPanel.setBackground(black);
 
@@ -94,27 +88,24 @@ public class Main {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         mainPanel.setPreferredSize(new Dimension(frame.getWidth(), 600));
 
-        cardBox = Box.createVerticalBox();
+        textBox = Box.createVerticalBox();
+        textBox.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        cardBox.setBackground(dark);
-        cardPanel = new JPanel();
-        cardPanel.setLayout(new BorderLayout());
-        cardPanel.add(cardBox, BorderLayout.PAGE_START);
-        cardPanel.setBackground(black);
+        textBox.setBackground(dark);
+        textPanel = new JPanel();
+        textPanel.setLayout(new BorderLayout());
+        textPanel.add(textBox, BorderLayout.PAGE_START);
+        textPanel.setBackground(black);
 
 
-        JScrollPane cardScroll = new JScrollPane(cardPanel);
-        cardScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        cardScroll.setMaximumSize(new Dimension(500, 460));
-        cardScroll.setPreferredSize(new Dimension(500, 460));
-        cardScroll.setBorder(BorderFactory.createMatteBorder(1,1,1,1, border));
+        JScrollPane textScroll = new JScrollPane(textPanel);
+        textScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        textScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        textScroll.setMaximumSize(new Dimension(500, 460));
+        textScroll.setPreferredSize(new Dimension(500, 460));
+        textScroll.setBorder(BorderFactory.createMatteBorder(1,1,1,1, border));
 
-        mainPanel.add(cardScroll);
-
-//        JPanel testPanel = new JPanel();
-//        testPanel.setPreferredSize(new Dimension(220, 460));
-//        testPanel.setBackground(black);
-//        mainPanel.add(testPanel);
+        mainPanel.add(textScroll);
 
         mainPanel.add(Box.createRigidArea(new Dimension(15, 0)));
 
