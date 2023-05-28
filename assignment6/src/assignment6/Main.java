@@ -2,17 +2,17 @@ package assignment6;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.io.*;
-import javax.imageio.*;
 import javax.swing.*;
 
 public class Main {
   static JFrame frame;
   static JPanel contentPanel, headerPanel, mainPanel, textPanel, statsPanel;
   static Box textBox, statsBox;
+
+  static JTextArea textContent, statsContent;
+  static JLabel statsTime;
 
   static Color black = new Color(0x000000);
   static Color dark = new Color(0x111111);
@@ -21,6 +21,10 @@ public class Main {
   static Color white = new Color(0xffffff);
 
   static ArrayList<String> items = new ArrayList<>();
+
+  static HashMap<String, String> contractions = new HashMap<>();
+  static HashMap<Word, Integer> words = new HashMap<>();
+
 
   public static void initHeader() {
     headerPanel = new JPanel();
@@ -41,39 +45,52 @@ public class Main {
       public void actionPerformed(ActionEvent e) {
         String selected = cb.getItemAt(cb.getSelectedIndex());
 
-        textBox.removeAll();
-
-        JLabel textBoxHeader = new JLabel(selected);
-        textBoxHeader.setForeground(white);
-        textBoxHeader.setFont(new Font("Arial", Font.BOLD, 20));
-
-        textBox.add(textBoxHeader);
-        textBox.add(Box.createRigidArea(new Dimension(0, 10)));
+//        textBox.removeAll();
+//        statsBox.removeAll();
 
         String line = "";
         try {
-          Scanner inFile = new Scanner(new File(selected + ".txt"));
-          while (inFile.hasNextLine()) {
-            line = inFile.nextLine();
-            JLabel l = new JLabel(line);
-            l.setForeground(white);
-            textBox.add(l);
+          words.clear();
+          long startTime = System.currentTimeMillis();
+
+          BufferedReader inFile = new BufferedReader(new FileReader(selected + ".txt"));
+
+          textContent.setText("");
+          textContent.read(inFile, null);
+
+          inFile = new BufferedReader(new FileReader(selected + ".txt"));
+
+          while ((line = inFile.readLine()) != null) {
+            processLine(line);
           }
+
+          int pos = 1;
+          statsContent.setText("");
+
+          Map<Word, Integer> sortedWords = new TreeMap<>(words);
+
+          for (Map.Entry<Word, Integer> entry : sortedWords.entrySet()) {
+            statsContent.append(pos + ". " + entry.getKey().toString().toLowerCase() + ": " + entry.getValue() + "\n");
+
+            pos++;
+            if (pos >= 21) break;
+          }
+
+//          System.out.println(statsContent.getText());
+          long timeDiff = System.currentTimeMillis() - startTime;
+          statsTime.setText(timeDiff + "ms");
+
           inFile.close();
         } catch (FileNotFoundException ex) {
           System.out.println("File does not exist");
+        } catch (IOException ex) {
+          ex.printStackTrace();
         }
 
+//        textBox.add(textContent);
         textBox.revalidate();
 
-        statsBox.removeAll();
-
-        JLabel statsBoxHeader = new JLabel(selected + " Statistics");
-        statsBoxHeader.setForeground(white);
-        statsBoxHeader.setFont(new Font("Arial", Font.BOLD, 20));
-
-        statsBox.add(statsBoxHeader);
-
+//        statsBox.add(statsContent);
         statsBox.revalidate();
 
       }
@@ -84,8 +101,14 @@ public class Main {
       public void actionPerformed(ActionEvent e) {
         String m = JOptionPane.showInputDialog("Enter file name (without .txt)");
 
-        if (m == null || m.isEmpty() || m.endsWith(".txt")) {
+        if (m == null || m.isEmpty()) {
           JOptionPane.showMessageDialog(null, "Input is empty.",
+              "Invalid", JOptionPane.ERROR_MESSAGE);
+          return;
+        }
+
+        if (m.endsWith(".txt")) {
+          JOptionPane.showMessageDialog(null, "Do not include the file extension!",
               "Invalid", JOptionPane.ERROR_MESSAGE);
           return;
         }
@@ -102,7 +125,6 @@ public class Main {
               "Success", JOptionPane.INFORMATION_MESSAGE);
           cb.addItem(m);
           items.add(m);
-//            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(new String[]{"ALICE", "MOBY"});
         } else {
           JOptionPane.showMessageDialog(null, "File does not exist.",
               "Invalid", JOptionPane.ERROR_MESSAGE);
@@ -144,10 +166,14 @@ public class Main {
     textBox.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
     textBox.setBackground(dark);
 
-    JLabel textBoxHeader = new JLabel("Selected Text Preview");
-    textBoxHeader.setForeground(white);
-    textBoxHeader.setFont(new Font("Arial", Font.BOLD, 20));
-    textBox.add(textBoxHeader);
+    textContent = new JTextArea();
+    textContent.setEditable(false);
+    textContent.setLineWrap(false);
+    textContent.setWrapStyleWord(false);
+    textContent.setForeground(light);
+    textContent.setBackground(black);
+
+    textBox.add(textContent);
 
     textPanel = new JPanel();
     textPanel.setLayout(new BorderLayout());
@@ -170,10 +196,19 @@ public class Main {
     statsBox.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
     statsBox.setBackground(dark);
 
-    JLabel statsBoxHeader = new JLabel("Selected Text Statistics");
-    statsBoxHeader.setForeground(white);
-    statsBoxHeader.setFont(new Font("Arial", Font.BOLD, 20));
-    statsBox.add(statsBoxHeader);
+    statsTime = new JLabel();
+    statsTime.setForeground(light);
+    statsBox.add(statsTime);
+
+    statsContent = new JTextArea();
+    statsContent.setEditable(false);
+    statsContent.setLineWrap(false);
+    statsContent.setWrapStyleWord(false);
+    statsContent.setForeground(light);
+    statsContent.setBackground(black);
+
+    textBox.add(Box.createRigidArea(new Dimension(0, 10)));
+    statsBox.add(statsContent);
 
     statsPanel = new JPanel();
     statsPanel.setLayout(new BorderLayout());
@@ -188,16 +223,129 @@ public class Main {
 
 
     mainPanel.add(statsScroll);
+  }
 
+  public static void processLine(String line) {
+    StringTokenizer st = new StringTokenizer(line, " ()[]{};:\\\"|/?.,<>!@#$%^&*_-+=~`1234567890", false);
+
+    while (st.hasMoreTokens()) {
+      String w = st.nextToken();
+
+      if (w.equals("'")) continue;
+
+      while (w.charAt(0) == '\'' || w.charAt(w.length() - 1) == '\'') {
+        System.out.println("looping into " + w);
+        if (w.length() > 1 && (w.charAt(0) == '\'' || w.charAt(0) == '\"')) {
+          System.out.println("converting " + w + " to " + w.substring(1));
+          w = w.substring(1);
+        }
+        if (w.length() > 1 && w.charAt(w.length() - 1) == '\'') {
+          System.out.println("converting " + w + " to " + w.substring(0, w.length() - 1));
+          w = w.substring(0, w.length() - 1);
+        }
+        if (!contractions.containsKey(w)) {
+          if (w.length() > 1 && w.charAt(w.length() - 2) == '\'' && w.charAt(w.length() - 1) == 's') {
+            System.out.println("converting " + w + " to " + w.substring(0, w.length() - 2));
+            w = w.substring(0, w.length() - 2);
+          }
+        }
+      }
+
+
+      if (contractions.containsKey(w)) {
+        w = contractions.get(w);
+        System.out.println("contraction " + w);
+        StringTokenizer st2 = new StringTokenizer(w, " ", false);
+        while (st2.hasMoreTokens()) {
+          String w2 = st2.nextToken();
+          System.out.println("token " + w2);
+          Word word = new Word(w2, 1);
+          if (words.containsKey(word)) {
+            int newCount = words.remove(word) + 1;
+            word.setCount(newCount);
+            System.out.println("c_adding " + word + " at " + newCount);
+            words.put(word, newCount);
+          } else {
+            System.out.println("c_adding " + word + " at 1");
+            words.put(word, 1);
+          }
+        }
+      } else {
+
+//        System.out.println("\nw: " + w);
+        Word word = new Word(w, 1);
+//        for (Map.Entry<Word, Integer> entry : words.entrySet()) {
+//          System.out.println("Key: " + entry.getKey() + " - Value: " + entry.getValue());
+//        }
+
+        if (words.containsKey(word)) {
+          int newCount = words.remove(word) + 1;
+          word.setCount(newCount);
+//          System.out.println("adding " + word + " at " + newCount);
+          words.put(word, newCount);
+        } else {
+//          System.out.println("adding " + word + " at 1");
+          words.put(word, 1);
+        }
+      }
+    }
+  }
+
+  public static void addContractions() {
+    contractions.put("should've", "should have");
+    contractions.put("shouldn't", "should not");
+    contractions.put("could've", "could have");
+    contractions.put("there'll", "there will");
+    contractions.put("would've", "would have");
+    contractions.put("couldn't", "could not");
+    contractions.put("there're", "there are");
+    contractions.put("these're", "these are");
+    contractions.put("those're", "those are");
+    contractions.put("wouldn't", "would not");
+    contractions.put("that'll", "that will");
+    contractions.put("they'll", "they will");
+    contractions.put("they've", "they have");
+    contractions.put("doesn't", "does not");
+    contractions.put("haven't", "have not");
+    contractions.put("there's", "there is");
+    contractions.put("they're", "they are");
+    contractions.put("weren't", "were not");
+    contractions.put("she'll", "she will");
+    contractions.put("you'll", "you will");
+    contractions.put("aren't", "are not");
+    contractions.put("didn't", "did not");
+    contractions.put("hadn't", "had not");
+    contractions.put("hasn't", "has not");
+    contractions.put("wasn't", "was not");
+    contractions.put("you're", "you are");
+    contractions.put("you've", "you have");
+    contractions.put("won't", "will not");
+    contractions.put("he'll", "he will");
+    contractions.put("it'll", "it will");
+    contractions.put("we'll", "we will");
+    contractions.put("we've", "we have");
+    contractions.put("can't", "cannot");
+    contractions.put("don't", "do not");
+    contractions.put("isn't", "is not");
+    contractions.put("she's", "she is");
+    contractions.put("we're", "we are");
+    contractions.put("I'll", "I will");
+    contractions.put("I've", "I have");
+    contractions.put("he's", "he is");
+    contractions.put("it's", "it is");
+    contractions.put("I'm", "I am");
   }
 
   public static void main(String[] args) {
-    frame = new JFrame("Assignment 5C");
+
+
+    frame = new JFrame("Assignment 6");
     frame.setPreferredSize(new Dimension(900, 600));
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     initHeader();
     initMain();
+    addContractions();
 
     contentPanel = new JPanel();
     contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.PAGE_AXIS));
