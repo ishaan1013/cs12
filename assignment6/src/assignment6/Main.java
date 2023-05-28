@@ -1,3 +1,7 @@
+// Ishaan Dey
+// May 25, 2023
+// Word frequency counter
+
 package assignment6;
 
 import java.awt.*;
@@ -25,7 +29,9 @@ public class Main {
   static HashMap<String, String> contractions = new HashMap<>();
   static HashMap<Word, Integer> words = new HashMap<>();
 
-
+  // initialize the header graphics
+  // no params
+  // void
   public static void initHeader() {
     headerPanel = new JPanel();
     headerPanel.setBackground(black);
@@ -50,23 +56,28 @@ public class Main {
 
         String line = "";
         try {
+          // read & process file contents
           words.clear();
-          long startTime = System.currentTimeMillis();
-
           BufferedReader inFile = new BufferedReader(new FileReader(selected + ".txt"));
 
           textContent.setText("");
           textContent.read(inFile, null);
 
-          inFile = new BufferedReader(new FileReader(selected + ".txt"));
+          // time it takes to process all the words
+          long startTime = System.currentTimeMillis();
 
+          inFile = new BufferedReader(new FileReader(selected + ".txt"));
           while ((line = inFile.readLine()) != null) {
             processLine(line);
           }
 
+          long timeDiff = System.currentTimeMillis() - startTime;
+          statsTime.setText(timeDiff + "ms");
+
           int pos = 1;
           statsContent.setText("");
 
+          // put word hashmap into a treemap (it's not just a treemap in the first place because of an issue i had w/ duplicate keys or something)
           Map<Word, Integer> sortedWords = new TreeMap<>(words);
 
           for (Map.Entry<Word, Integer> entry : sortedWords.entrySet()) {
@@ -75,10 +86,6 @@ public class Main {
             pos++;
             if (pos >= 21) break;
           }
-
-//          System.out.println(statsContent.getText());
-          long timeDiff = System.currentTimeMillis() - startTime;
-          statsTime.setText(timeDiff + "ms");
 
           inFile.close();
         } catch (FileNotFoundException ex) {
@@ -155,6 +162,9 @@ public class Main {
     headerPanel.add(b3);
   }
 
+  // initialize the main display graphics (the file contents + statistics)
+  // no params
+  // void
   public static void initMain() {
     mainPanel = new JPanel();
     mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.LINE_AXIS));
@@ -181,6 +191,7 @@ public class Main {
     textPanel.setBackground(black);
 
 
+    // put both parts of this section in a scroll container
     JScrollPane textScroll = new JScrollPane(textPanel);
     textScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     textScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -215,82 +226,78 @@ public class Main {
     statsPanel.add(statsBox, BorderLayout.PAGE_START);
     statsPanel.setBackground(black);
 
+    // other scroll container
     JScrollPane statsScroll = new JScrollPane(statsPanel);
     statsScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     statsScroll.setMaximumSize(new Dimension(500, 460));
     statsScroll.setPreferredSize(new Dimension(500, 460));
     statsScroll.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, border));
 
-
     mainPanel.add(statsScroll);
   }
 
+  // takes in a line of a file being read, then processes it to get the individual words, and adds the frequency accordingly
+  // parameter is the line to be processed
+  // no return, just updates the map directly
   public static void processLine(String line) {
     StringTokenizer st = new StringTokenizer(line, " ()[]{};:\\\"|/?.,<>!@#$%^&*_-+=~`1234567890", false);
 
     while (st.hasMoreTokens()) {
       String w = st.nextToken();
 
+      // ignore single apostrophe
       if (w.equals("'")) continue;
 
+      // deal with quotes & possessive
       while (w.charAt(0) == '\'' || w.charAt(w.length() - 1) == '\'') {
-        System.out.println("looping into " + w);
         if (w.length() > 1 && (w.charAt(0) == '\'' || w.charAt(0) == '\"')) {
-          System.out.println("converting " + w + " to " + w.substring(1));
+//          System.out.println("converting " + w + " to " + w.substring(1));
           w = w.substring(1);
         }
         if (w.length() > 1 && w.charAt(w.length() - 1) == '\'') {
-          System.out.println("converting " + w + " to " + w.substring(0, w.length() - 1));
+//          System.out.println("converting " + w + " to " + w.substring(0, w.length() - 1));
           w = w.substring(0, w.length() - 1);
         }
         if (!contractions.containsKey(w)) {
           if (w.length() > 1 && w.charAt(w.length() - 2) == '\'' && w.charAt(w.length() - 1) == 's') {
-            System.out.println("converting " + w + " to " + w.substring(0, w.length() - 2));
+//            System.out.println("converting " + w + " to " + w.substring(0, w.length() - 2));
             w = w.substring(0, w.length() - 2);
           }
         }
       }
 
-
+      // separate string tokenizer for contractions since it's 2 words
       if (contractions.containsKey(w)) {
         w = contractions.get(w);
-        System.out.println("contraction " + w);
         StringTokenizer st2 = new StringTokenizer(w, " ", false);
         while (st2.hasMoreTokens()) {
           String w2 = st2.nextToken();
-          System.out.println("token " + w2);
           Word word = new Word(w2, 1);
           if (words.containsKey(word)) {
             int newCount = words.remove(word) + 1;
             word.setCount(newCount);
-            System.out.println("c_adding " + word + " at " + newCount);
             words.put(word, newCount);
           } else {
-            System.out.println("c_adding " + word + " at 1");
             words.put(word, 1);
           }
         }
       } else {
-
-//        System.out.println("\nw: " + w);
         Word word = new Word(w, 1);
-//        for (Map.Entry<Word, Integer> entry : words.entrySet()) {
-//          System.out.println("Key: " + entry.getKey() + " - Value: " + entry.getValue());
-//        }
 
         if (words.containsKey(word)) {
           int newCount = words.remove(word) + 1;
           word.setCount(newCount);
-//          System.out.println("adding " + word + " at " + newCount);
           words.put(word, newCount);
         } else {
-//          System.out.println("adding " + word + " at 1");
           words.put(word, 1);
         }
       }
     }
   }
 
+  // method to initialize the map of contractions
+  // no params
+  // void (updates global variable)
   public static void addContractions() {
     contractions.put("should've", "should have");
     contractions.put("shouldn't", "should not");
@@ -338,11 +345,11 @@ public class Main {
 
   public static void main(String[] args) {
 
-
     frame = new JFrame("Assignment 6");
     frame.setPreferredSize(new Dimension(900, 600));
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+    // call all initializing methods
     initHeader();
     initMain();
     addContractions();
