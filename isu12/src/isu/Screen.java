@@ -1,5 +1,5 @@
 package isu;
 
 public enum Screen {
-  MENU, INFO, GAME, RESULTS
+  MENU, INFO, MAPSELECT, GAME, RESULTS
 }

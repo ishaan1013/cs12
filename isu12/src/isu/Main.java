@@ -8,39 +8,39 @@ import java.io.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class Main {
+public class Main extends JPanel {
 
   static JFrame frame;
-  static JPanel menuPanel, gamePanel;
-  static JPanel contentPanel = new JPanel();
+  JPanel menuPanel, gamePanel;
 
-  static Font smF, mdF, lgF;
+  Font smF, mdF, lgF;
 
-  static Color white = new Color(255, 255, 255, 255);
-  static Color black = new Color(0, 0, 0, 255);
+  Screen screen = Screen.MENU;
+  int currentMap = 0;
 
-  public static void initMenu() throws IOException {
+  Color white = new Color(255, 255, 255, 255);
+  Color black = new Color(0, 0, 0, 255);
 
-    BufferedImage bgBI = ImageIO.read(new File("assets/screens/menu.png"));
-    JLabel bgLabel = new JLabel(new ImageIcon(bgBI));
-    bgLabel.setBounds(0, 0, 900, 600);
+  public void initMenu() throws IOException {
 
     menuPanel = new JPanel();
-    menuPanel.setBounds(0, 0, 900, 600);
+    menuPanel.setBounds(0, 0, 1100, 600);
     menuPanel.setOpaque(false);
     menuPanel.setLayout(null);
 
     JPanel buttonPanel = new JPanel();
-    buttonPanel.setBounds(220, 440, 460, 60);
+    buttonPanel.setBounds(320, 440, 460, 60);
     buttonPanel.setOpaque(false);
     buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
     JButton playButton = new JButton("Map Select");
     playButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        contentPanel.removeAll();
-        contentPanel.repaint();
-        contentPanel.revalidate();
+        removeAll();
+
+        screen = Screen.MAPSELECT;
+        repaint();
+        revalidate();
 
         try {
           initMapSelect();
@@ -67,19 +67,17 @@ public class Main {
     buttonPanel.add(infoButton);
 
     menuPanel.add(buttonPanel);
-    contentPanel.add(menuPanel);
+    add(menuPanel);
 
-    contentPanel.add(bgLabel);
-
-
+//    add(bgLabel);
   }
 
-  public static void initMapSelect() throws IOException {
+  public void initMapSelect() throws IOException {
 
-    contentPanel.setBackground(black);
+    setBackground(black);
 
     JPanel optionsPanel = new JPanel();
-    optionsPanel.setBounds(60, 120, 750, 500);
+    optionsPanel.setBounds(25, 100, 1050, 500);
     optionsPanel.setOpaque(false);
     optionsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
@@ -89,15 +87,20 @@ public class Main {
 
 
     BufferedImage pondMapBI = ImageIO.read(new File("assets/screens/pond.png"));
-    JLabel pondMapLabel = new JLabel(new ImageIcon(pondMapBI.getScaledInstance(350, 233, Image.SCALE_FAST)));
+    JLabel pondMapLabel = new JLabel(new ImageIcon(pondMapBI.getScaledInstance(500, 272, Image.SCALE_FAST)));
     pondMapLabel.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-        System.out.println("Pond Map");
-//        contentPanel.removeAll();
-//        contentPanel.repaint();
-//        contentPanel.revalidate();
-//
-//        initGame(1);
+        removeAll();
+
+        screen = Screen.GAME;
+        repaint();
+        revalidate();
+
+        try {
+          initGame();
+        } catch (IOException ex) {
+          ex.printStackTrace();
+        }
       }
     });
 
@@ -115,15 +118,20 @@ public class Main {
     imageGroup2.setOpaque(false);
 
     BufferedImage beachMapBI = ImageIO.read(new File("assets/screens/beach.png"));
-    JLabel beachMapLabel = new JLabel(new ImageIcon(beachMapBI.getScaledInstance(350, 233, Image.SCALE_FAST)));
+    JLabel beachMapLabel = new JLabel(new ImageIcon(beachMapBI.getScaledInstance(500, 272, Image.SCALE_FAST)));
     beachMapLabel.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-        System.out.println("Beach Map");
-//        contentPanel.removeAll();
-//        contentPanel.repaint();
-//        contentPanel.revalidate();
-//
-//        initGame(1);
+        removeAll();
+
+        screen = Screen.GAME;
+        repaint();
+        revalidate();
+
+        try {
+          initGame();
+        } catch (IOException ex) {
+          ex.printStackTrace();
+        }
       }
     });
 
@@ -142,11 +150,11 @@ public class Main {
     optionsPanel.add(Box.createRigidArea(new Dimension(50, 0)));
     optionsPanel.add(imageGroup2);
 
-    contentPanel.add(optionsPanel);
+    add(optionsPanel);
 
   }
 
-  public static void initFonts() {
+  public void initFonts() {
     try {
       smF = Font.createFont(Font.TRUETYPE_FONT, new File("assets/font/oetztype.ttf")).deriveFont(12f);
       mdF = Font.createFont(Font.TRUETYPE_FONT, new File("assets/font/oetztype.ttf")).deriveFont(18f);
@@ -163,22 +171,86 @@ public class Main {
     }
   }
 
+  public void initGame() throws IOException {
+    gamePanel = new JPanel();
+    gamePanel.setBounds(0, 0, 1100, 600);
+    gamePanel.setOpaque(false);
+    gamePanel.setLayout(null);
 
-  public static void main(String[] args) throws IOException {
+    JPanel monkeys = new JPanel();
+    
+    monkeys.setBounds(900, 0, 200, 280);
+    monkeys.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+    monkeys.setOpaque(false);
+    monkeys.setLayout(new GridLayout(3, 2, 10, 10));
 
-    frame = new JFrame("B");
-    frame.setPreferredSize(new Dimension(900, 600));
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    String[] monkeyIcons = {"dart", "ninja", "buc", "super", "village", "farm"};
+    for (int i = 0; i < 6; i++) {
+      BufferedImage monkeyBI = ImageIO.read(new File("assets/monkeys/" + monkeyIcons[i] + "/1.png"));
+      JLabel monkeyLabel = new JLabel(new ImageIcon(monkeyBI.getScaledInstance(60, 60, Image.SCALE_FAST)));
+      monkeyLabel.setBackground(new Color(139, 89, 57, 150));
+      monkeyLabel.setOpaque(true);
+      monkeys.add(monkeyLabel);
+    }
 
-    contentPanel.setLayout(null);
-    contentPanel.setPreferredSize(new Dimension(900, 600));
+    gamePanel.add(monkeys);
+
+    add(gamePanel);
+
+  }
+
+
+  public Main() throws IOException {
+
+    setLayout(null);
+    setPreferredSize(new Dimension(1100, 600));
 
     // call all initializing methods
     initFonts();
     initMenu();
-    initMapSelect();
+//    initMapSelect();
+  }
 
-    frame.setContentPane(contentPanel);
+  public void paintComponent(Graphics g) {
+    super.paintComponent(g);
+
+    String[] maps = {"pond", "beach"};
+
+    BufferedImage bgBI = null;
+    if (screen == Screen.MENU) {
+      try {
+        bgBI = ImageIO.read(new File("assets/screens/menu.png"));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else if (screen == Screen.MAPSELECT) {
+      try {
+        bgBI = ImageIO.read(new File("assets/screens/mapselect.png"));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else if (screen == Screen.GAME) {
+      try {
+        bgBI = ImageIO.read(new File("assets/screens/" + maps[currentMap] + ".png"));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    g.drawImage(bgBI, 0, 0, null);
+
+  }
+
+
+  public static void main(String[] args) throws IOException {
+
+    frame = new JFrame("B");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    Main contentPanel = new Main();
+    //...
+
+    frame.add(contentPanel);
     frame.pack();
     frame.setVisible(true);
 
