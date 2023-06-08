@@ -8,7 +8,7 @@ import java.io.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class Main extends JPanel {
+public class Main extends JPanel implements Runnable {
 
   static JFrame frame;
   JPanel menuPanel, gamePanel;
@@ -21,7 +21,52 @@ public class Main extends JPanel {
   Color white = new Color(255, 255, 255, 255);
   Color black = new Color(0, 0, 0, 255);
 
-  public void initMenu() throws IOException {
+  long startTime, timeElapsed;
+  int frameCount = 0;
+
+  Thread thread;
+
+  public Main() {
+
+    setLayout(null);
+    setPreferredSize(new Dimension(1100, 600));
+
+    // call all initializing methods
+    initFonts();
+    initMenu();
+
+    thread = new Thread(this);
+    thread.start();
+  }
+
+  public void run() {
+    System.out.println("Thread: Initializing game");
+    startTime = System.currentTimeMillis();
+    timeElapsed = 0;
+    for (int i = 0; i < 100000; i++) {
+      // this is just to delay time
+      String s = "set up stuff blah blah blah";
+      s.toUpperCase();
+    }
+    System.out.println("Thread: Done initializing game");
+
+    while (true) {
+      update();
+      repaint();
+      try {
+        Thread.sleep(1000 / 60);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  public void update() {
+    timeElapsed = System.currentTimeMillis() - startTime;
+    frameCount++;
+  }
+
+  public void initMenu() {
 
     menuPanel = new JPanel();
     menuPanel.setBounds(0, 0, 1100, 600);
@@ -178,7 +223,7 @@ public class Main extends JPanel {
     gamePanel.setLayout(null);
 
     JPanel monkeys = new JPanel();
-    
+
     monkeys.setBounds(900, 0, 200, 280);
     monkeys.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
     monkeys.setOpaque(false);
@@ -199,18 +244,6 @@ public class Main extends JPanel {
 
   }
 
-
-  public Main() throws IOException {
-
-    setLayout(null);
-    setPreferredSize(new Dimension(1100, 600));
-
-    // call all initializing methods
-    initFonts();
-    initMenu();
-//    initMapSelect();
-  }
-
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
 
@@ -223,21 +256,35 @@ public class Main extends JPanel {
       } catch (IOException e) {
         e.printStackTrace();
       }
+      g.drawImage(bgBI, 0, 0, null);
+
     } else if (screen == Screen.MAPSELECT) {
       try {
         bgBI = ImageIO.read(new File("assets/screens/mapselect.png"));
       } catch (IOException e) {
         e.printStackTrace();
       }
+      g.drawImage(bgBI, 0, 0, null);
+
     } else if (screen == Screen.GAME) {
       try {
         bgBI = ImageIO.read(new File("assets/screens/" + maps[currentMap] + ".png"));
       } catch (IOException e) {
         e.printStackTrace();
       }
+
+      g.drawImage(bgBI, 0, 0, null);
+
+//
+      g.setColor(white);
+//      g.drawString("" + timeElapsed + " ms since start of program", 200, 300);
+//      g.drawString("" + timeElapsed / 1000 + " seconds since the start of program", 200, 350);
+//      g.drawString(frameCount + " frames ran since the start of program", 200, 400);
+      
+      double fps = (Math.round(((double) frameCount / ((double) timeElapsed / 1000)) * 100)) / 100.0;
+      g.drawString("FPS: " + String.format("%.2f", fps), 905, 585);
     }
 
-    g.drawImage(bgBI, 0, 0, null);
 
   }
 
