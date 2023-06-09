@@ -275,12 +275,8 @@ public class Main extends JPanel implements Runnable {
 
       g.drawImage(bgBI, 0, 0, null);
 
-//
       g.setColor(white);
-//      g.drawString("" + timeElapsed + " ms since start of program", 200, 300);
-//      g.drawString("" + timeElapsed / 1000 + " seconds since the start of program", 200, 350);
-//      g.drawString(frameCount + " frames ran since the start of program", 200, 400);
-      
+
       double fps = (Math.round(((double) frameCount / ((double) timeElapsed / 1000)) * 100)) / 100.0;
       g.drawString("FPS: " + String.format("%.2f", fps), 905, 585);
     }
