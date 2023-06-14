@@ -7,6 +7,7 @@ public abstract class Tower {
   private int y;
   private int width;
   private int height;
+  private String pathname;
 
   private int range;
 
@@ -14,11 +15,12 @@ public abstract class Tower {
 
   private ArrayList<Upgrade> upgrades;
 
-  public Tower(int x, int y, int width, int height, int range, int cost, ArrayList<Upgrade> upgrades) {
+  public Tower(int x, int y, int width, int height, String pathname, int range, int cost, ArrayList<Upgrade> upgrades) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.pathname = "assets/monkeys/" + pathname + "/";
     this.range = range;
     this.cost = cost;
     this.upgrades = upgrades;
@@ -38,6 +40,10 @@ public abstract class Tower {
 
   public int getHeight() {
     return height;
+  }
+
+  public String getPathname() {
+    return pathname;
   }
 
   public int getRange() {

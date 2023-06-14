@@ -6,7 +6,7 @@ public class BucM extends Monkey {
   // dart monkey
 
   public BucM(int x, int y) {
-    super(x, y, 80, 80, 60, 80, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 1);
+    super(x, y, 80, 80, "buc", 60, 80, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 1);
 
     setupUpgrades();
   }

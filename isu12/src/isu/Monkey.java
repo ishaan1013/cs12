@@ -11,8 +11,8 @@ public abstract class Monkey extends Tower {
   private int fireRate;
   private int damage;
 
-  public Monkey(int x, int y, int width, int height, int range, int cost, ArrayList<Upgrade> upgrades, boolean camo, boolean lead, Projectile projectile, int fireRate, int damage) {
-    super(x, y, width, height, range, cost, upgrades);
+  public Monkey(int x, int y, int width, int height, String pathname, int range, int cost, ArrayList<Upgrade> upgrades, boolean camo, boolean lead, Projectile projectile, int fireRate, int damage) {
+    super(x, y, width, height, pathname, range, cost, upgrades);
 
     this.pops = 0;
     this.camo = camo;

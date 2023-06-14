@@ -26,6 +26,11 @@ public class Main extends JPanel implements Runnable {
 
   Thread thread;
 
+  Game game;
+
+  int mouseX = -1;
+  int mouseY = -1;
+
   public Main() {
 
     setLayout(null);
@@ -142,7 +147,7 @@ public class Main extends JPanel implements Runnable {
         revalidate();
 
         try {
-          initGame();
+          initGame(0);
         } catch (IOException ex) {
           ex.printStackTrace();
         }
@@ -173,7 +178,7 @@ public class Main extends JPanel implements Runnable {
         revalidate();
 
         try {
-          initGame();
+          initGame(1);
         } catch (IOException ex) {
           ex.printStackTrace();
         }
@@ -216,11 +221,23 @@ public class Main extends JPanel implements Runnable {
     }
   }
 
-  public void initGame() throws IOException {
+  public void initGame(int map) throws IOException {
+
+    game = new Game(map);
+
     gamePanel = new JPanel();
     gamePanel.setBounds(0, 0, 1100, 600);
     gamePanel.setOpaque(false);
     gamePanel.setLayout(null);
+    gamePanel.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (game.getPlacing() != null) {
+          mouseX = e.getX();
+          mouseY = e.getY();
+        }
+
+      }
+    });
 
     JPanel monkeys = new JPanel();
 
@@ -229,16 +246,44 @@ public class Main extends JPanel implements Runnable {
     monkeys.setOpaque(false);
     monkeys.setLayout(new GridLayout(3, 2, 10, 10));
 
-    String[] monkeyIcons = {"dart", "ninja", "buc", "super", "village", "farm"};
-    for (int i = 0; i < 6; i++) {
+    JPanel controls = new JPanel();
+
+    controls.setBounds(900, 520, 200, 80);
+    controls.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+    controls.setOpaque(false);
+    controls.setLayout(new GridLayout(1, 3, 10, 10));
+
+    String[] monkeyIcons = {"dart", "ninja", "buc", "super"};
+    for (int i = 0; i < 4; i++) {
       BufferedImage monkeyBI = ImageIO.read(new File("assets/monkeys/" + monkeyIcons[i] + "/1.png"));
       JLabel monkeyLabel = new JLabel(new ImageIcon(monkeyBI.getScaledInstance(60, 60, Image.SCALE_FAST)));
       monkeyLabel.setBackground(new Color(139, 89, 57, 150));
       monkeyLabel.setOpaque(true);
+
+      // fixes error with the mouselistener
+      int finalI = i;
+
+      monkeyLabel.addMouseListener(new MouseAdapter() {
+        public void mouseClicked(MouseEvent e) {
+          if (game.getPlacing() == null) game.setPlacing(monkeyIcons[finalI]);
+          else game.setPlacing(null);
+        }
+      });
       monkeys.add(monkeyLabel);
     }
 
+    String[] controlIcons = {"pause", "speed", "exit"};
+    for (int i = 0; i < 3; i++) {
+      BufferedImage controlBI = ImageIO.read(new File("assets/controls/" + controlIcons[i] + ".png"));
+      JLabel controlLabel = new JLabel(new ImageIcon(controlBI.getScaledInstance(40, 40, Image.SCALE_FAST)));
+      controlLabel.setBackground(new Color(87, 60, 43, 200));
+      controlLabel.setOpaque(true);
+
+      controls.add(controlLabel);
+    }
+
     gamePanel.add(monkeys);
+    gamePanel.add(controls);
 
     add(gamePanel);
 
@@ -279,13 +324,58 @@ public class Main extends JPanel implements Runnable {
 
       double fps = (Math.round(((double) frameCount / ((double) timeElapsed / 1000)) * 100)) / 100.0;
       g.drawString("FPS: " + String.format("%.2f", fps), 905, 585);
-    }
 
+      for (Tower t : game.getTowers()) {
+        try {
+          BufferedImage towerBI = ImageIO.read(new File(t.getPathname() + "1.png"));
+          g.drawImage(towerBI, t.getX() - (t.getWidth() / 2), t.getY() - (t.getHeight() / 2), null);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+      }
+
+      if (game.getPlacing() != null) {
+//        g.drawString("X: " + mouseX, 905, 555);
+//        g.drawString("Y: " + mouseY, 905, 570);
+        g.drawString("Adding...", 905, 570);
+
+        if (mouseX != -1 && mouseY != -1) {
+//          System.out.println("Added monkey at " + mouseX + ", " + mouseY);
+          String placing = game.getPlacing();
+          if (placing.equals("dart") || placing.equals("ninja") || placing.equals("super")) {
+
+            if (game.isCoordValid(mouseX, mouseY, 70, false)) {
+              switch (placing) {
+                case "dart" -> game.addTower(new DartM(mouseX, mouseY));
+                case "ninja" -> game.addTower(new NinjaM(mouseX, mouseY));
+                case "super" -> game.addTower(new SuperM(mouseX, mouseY));
+              }
+              System.out.println(placing + " - added land at " + mouseX + ", " + mouseY);
+            } else {
+              System.out.println(placing + " - invalid placement " + mouseX + ", " + mouseY);
+            }
+          } else {
+            if (game.isCoordValid(mouseX, mouseY, 85, true)) {
+              game.addTower(new BucM(mouseX, mouseY));
+              System.out.println(placing + " - added buc at " + mouseX + ", " + mouseY);
+            } else {
+              System.out.println(placing + " - invalid placement " + mouseX + ", " + mouseY);
+            }
+          }
+
+
+          game.setPlacing(null);
+          mouseX = -1;
+          mouseY = -1;
+        }
+
+      }
+    }
 
   }
 
-
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
 
     frame = new JFrame("B");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

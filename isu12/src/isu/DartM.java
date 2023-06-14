@@ -6,7 +6,7 @@ public class DartM extends Monkey {
   // dart monkey
 
   public DartM(int x, int y) {
-    super(x, y, 70, 70, 60, 50, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 1);
+    super(x, y, 70, 70, "dart", 60, 50, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 1);
 
     setupUpgrades();
   }

@@ -6,7 +6,7 @@ public class SuperM extends Monkey {
   // dart monkey
 
   public SuperM(int x, int y) {
-    super(x, y, 70, 70, 60, 500, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 4);
+    super(x, y, 70, 70, "super", 60, 500, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 4);
 
     setupUpgrades();
   }

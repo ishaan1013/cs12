@@ -6,7 +6,7 @@ public class NinjaM extends Monkey {
   // dart monkey
 
   public NinjaM(int x, int y) {
-    super(x, y, 70, 70, 60, 80, new ArrayList<Upgrade>(), true, false, new Projectile(), 2, 1);
+    super(x, y, 70, 70, "ninja", 60, 80, new ArrayList<Upgrade>(), true, false, new Projectile(), 2, 1);
 
     setupUpgrades();
   }
