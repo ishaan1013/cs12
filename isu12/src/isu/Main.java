@@ -31,6 +31,9 @@ public class Main extends JPanel implements Runnable {
   int mouseX = -1;
   int mouseY = -1;
 
+  JPanel controls;
+  JLabel pauseL, playL, speedL, speed2L, exitL;
+
   public Main() {
 
     setLayout(null);
@@ -244,9 +247,9 @@ public class Main extends JPanel implements Runnable {
     monkeys.setBounds(900, 0, 200, 280);
     monkeys.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
     monkeys.setOpaque(false);
-    monkeys.setLayout(new GridLayout(3, 2, 10, 10));
+    monkeys.setLayout(new GridLayout(2, 2, 10, 10));
 
-    JPanel controls = new JPanel();
+    controls = new JPanel();
 
     controls.setBounds(900, 520, 200, 80);
     controls.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
@@ -272,21 +275,118 @@ public class Main extends JPanel implements Runnable {
       monkeys.add(monkeyLabel);
     }
 
-    String[] controlIcons = {"pause", "speed", "exit"};
-    for (int i = 0; i < 3; i++) {
-      BufferedImage controlBI = ImageIO.read(new File("assets/controls/" + controlIcons[i] + ".png"));
-      JLabel controlLabel = new JLabel(new ImageIcon(controlBI.getScaledInstance(40, 40, Image.SCALE_FAST)));
-      controlLabel.setBackground(new Color(87, 60, 43, 200));
-      controlLabel.setOpaque(true);
+    // controls
 
-      controls.add(controlLabel);
-    }
+    initControls();
 
     gamePanel.add(monkeys);
     gamePanel.add(controls);
 
     add(gamePanel);
 
+  }
+
+  public void initControls() throws IOException {
+    BufferedImage pauseBI = ImageIO.read(new File("assets/controls/pause.png"));
+    BufferedImage playBI = ImageIO.read(new File("assets/controls/play.png"));
+    BufferedImage speedBI = ImageIO.read(new File("assets/controls/speed.png"));
+    BufferedImage speed2BI = ImageIO.read(new File("assets/controls/speed2.png"));
+    BufferedImage exitBI = ImageIO.read(new File("assets/controls/exit.png"));
+    pauseL = styleControl(pauseL, pauseBI);
+    playL = styleControl(playL, playBI);
+    speedL = styleControl(speedL, speedBI);
+    speed2L = styleControl(speed2L, speed2BI);
+    exitL = styleControl(exitL, exitBI);
+
+    pauseL.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        controls.removeAll();
+        controls.add(playL);
+
+        if (game.getSpedUp()) {
+          controls.add(speed2L);
+        } else {
+          controls.add(speedL);
+        }
+        controls.add(exitL);
+
+        controls.revalidate();
+
+        game.pauseResume();
+      }
+    });
+    playL.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        controls.removeAll();
+        controls.add(pauseL);
+
+        if (game.getSpedUp()) {
+          controls.add(speed2L);
+        } else {
+          controls.add(speedL);
+        }
+        controls.add(exitL);
+
+        controls.revalidate();
+
+        game.pauseResume();
+      }
+    });
+    speedL.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        controls.removeAll();
+
+        if (game.getPause()) {
+          controls.add(playL);
+        } else {
+          controls.add(pauseL);
+        }
+
+        controls.add(speed2L);
+        controls.add(exitL);
+
+        controls.revalidate();
+
+        game.speedChange();
+      }
+    });
+    speed2L.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        controls.removeAll();
+
+        if (game.getPause()) {
+          controls.add(playL);
+        } else {
+          controls.add(pauseL);
+        }
+
+        controls.add(speedL);
+        controls.add(exitL);
+
+        controls.revalidate();
+
+        game.speedChange();
+      }
+    });
+    exitL.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        System.out.println("exit");
+      }
+    });
+
+    controls.add(pauseL);
+//    controls.add(playL);
+    controls.add(speedL);
+//    controls.add(speed2L);
+    controls.add(exitL);
+  }
+
+  public JLabel styleControl(JLabel l, BufferedImage i) {
+    l = new JLabel(new ImageIcon(i.getScaledInstance(40, 40, Image.SCALE_FAST)));
+    l.setBackground(new Color(87, 60, 43, 200));
+    l.setOpaque(true);
+
+    return l;
   }
 
   public void paintComponent(Graphics g) {
