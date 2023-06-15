@@ -22,6 +22,7 @@ public class Game {
   private ArrayList<Tower> towers;
   private ArrayList<Bloon> bloons;
   private String placing;
+  private int selected;
 
   public Game(int map) {
     this.map = map;
@@ -111,7 +112,7 @@ public class Game {
     this.hp = 200;
     this.money = 800;
     this.round = 1;
-    this.pause = false;
+    this.pause = true;
     this.spedUp = false;
     this.towers = new ArrayList<Tower>();
     this.bloons = new ArrayList<Bloon>();

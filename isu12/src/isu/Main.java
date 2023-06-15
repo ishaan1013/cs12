@@ -31,8 +31,11 @@ public class Main extends JPanel implements Runnable {
   int mouseX = -1;
   int mouseY = -1;
 
-  JPanel controls;
+  JLabel monkeyName;
+  JPanel upgrades, controls;
   JLabel pauseL, playL, speedL, speed2L, exitL;
+  ArrayList<JPanel> upgradePanels;
+
 
   public Main() {
 
@@ -237,6 +240,28 @@ public class Main extends JPanel implements Runnable {
         if (game.getPlacing() != null) {
           mouseX = e.getX();
           mouseY = e.getY();
+        } else {
+          boolean oneSelected = false;
+          for (Tower t : game.getTowers()) {
+            if (t.getHitbox().contains(e.getPoint())) {
+              t.setSelected(true);
+              oneSelected = true;
+              monkeyName.setText(t.getName());
+              ArrayList<Upgrade> upgradesList = t.getUpgrades();
+              upgrades.removeAll();
+              for (Upgrade u : upgradesList) {
+                upgrades.add(u.getPanel());
+              }
+              upgrades.revalidate();
+            } else {
+              t.setSelected(false);
+              if (!oneSelected) {
+                monkeyName.setText("");
+                upgrades.removeAll();
+              }
+              ;
+            }
+          }
         }
 
       }
@@ -244,17 +269,29 @@ public class Main extends JPanel implements Runnable {
 
     JPanel monkeys = new JPanel();
 
-    monkeys.setBounds(900, 0, 200, 280);
+    monkeys.setBounds(900, 0, 200, 200);
     monkeys.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
     monkeys.setOpaque(false);
-    monkeys.setLayout(new GridLayout(2, 2, 10, 10));
+    monkeys.setLayout(new GridLayout(2, 2, 5, 5));
+
+    monkeyName = new JLabel("");
+    monkeyName.setFont(mdF);
+    monkeyName.setForeground(white);
+    monkeyName.setBounds(915, 200, 170, 50);
+//    monkeyName.setOpaque(true);
+
+    upgrades = new JPanel();
+    upgrades.setBounds(900, 230, 200, 300);
+    upgrades.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+    upgrades.setOpaque(false);
+    upgrades.setLayout(new GridLayout(4, 1, 0, 5));
 
     controls = new JPanel();
 
     controls.setBounds(900, 520, 200, 80);
     controls.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
     controls.setOpaque(false);
-    controls.setLayout(new GridLayout(1, 3, 10, 10));
+    controls.setLayout(new GridLayout(1, 3, 5, 5));
 
     String[] monkeyIcons = {"dart", "ninja", "buc", "super"};
     for (int i = 0; i < 4; i++) {
@@ -265,7 +302,6 @@ public class Main extends JPanel implements Runnable {
 
       // fixes error with the mouselistener
       int finalI = i;
-
       monkeyLabel.addMouseListener(new MouseAdapter() {
         public void mouseClicked(MouseEvent e) {
           if (game.getPlacing() == null) game.setPlacing(monkeyIcons[finalI]);
@@ -280,6 +316,8 @@ public class Main extends JPanel implements Runnable {
     initControls();
 
     gamePanel.add(monkeys);
+    gamePanel.add(monkeyName);
+    gamePanel.add(upgrades);
     gamePanel.add(controls);
 
     add(gamePanel);
@@ -374,7 +412,7 @@ public class Main extends JPanel implements Runnable {
       }
     });
 
-    controls.add(pauseL);
+    controls.add(playL);
 //    controls.add(playL);
     controls.add(speedL);
 //    controls.add(speed2L);
@@ -428,6 +466,13 @@ public class Main extends JPanel implements Runnable {
       for (Tower t : game.getTowers()) {
         try {
           BufferedImage towerBI = ImageIO.read(new File(t.getPathname() + "1.png"));
+          if (t.isSelected()) {
+            g.setColor(new Color(0, 0, 0, 100));
+            int range = t.getRange();
+            // range is the radius around the x and y coordinates
+            // draw a circle centered on x and y with that radius
+            g.fillOval(t.getX() - range, t.getY() - range, range * 2, range * 2);
+          }
           g.drawImage(towerBI, t.getX() - (t.getWidth() / 2), t.getY() - (t.getHeight() / 2), null);
         } catch (IOException e) {
           e.printStackTrace();

@@ -6,7 +6,7 @@ public class DartM extends Monkey {
   // dart monkey
 
   public DartM(int x, int y) {
-    super(x, y, 70, 70, "dart", 60, 50, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 1);
+    super(x, y, 70, 70, "dart", 80, 50, new ArrayList<Upgrade>(), false, false, new Projectile(), 2, 1);
 
     setupUpgrades();
   }
@@ -14,10 +14,10 @@ public class DartM extends Monkey {
   private void setupUpgrades() {
     ArrayList<Upgrade> upg = this.getUpgrades();
 
-    upg.add(new Upgrade(100, "Long Range Darts", 0, 0, 15, false, false));
-    upg.add(new Upgrade(300, "Fast Arm", 1, 0, 0, false, false));
-    upg.add(new Upgrade(500, "Night Vision Goggles", 0, 0, 0, true, false));
-    upg.add(new Upgrade(800, "Spike-O-Pult", 0, 3, 0, false, true));
+    upg.add(new Upgrade(100, "Long Range Darts", "Range", 0, 0, 30, false, false));
+    upg.add(new Upgrade(300, "Fast Arm", "Fire Rate", 1, 0, 0, false, false));
+    upg.add(new Upgrade(500, "Night Vision Goggles", "Camo", 0, 0, 0, true, false));
+    upg.add(new Upgrade(800, "Spike-O-Pult", "Max", 0, 4, 0, false, true));
 
     this.setUpgrades(upg);
 
