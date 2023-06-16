@@ -36,7 +36,6 @@ public class Main extends JPanel implements Runnable {
   JLabel pauseL, playL, speedL, speed2L, exitL;
   ArrayList<JPanel> upgradePanels;
 
-
   public Main() {
 
     setLayout(null);
@@ -252,6 +251,8 @@ public class Main extends JPanel implements Runnable {
               for (Upgrade u : upgradesList) {
                 upgrades.add(u.getPanel());
               }
+              upgrades.add(t.getSellPanel());
+
               upgrades.revalidate();
             } else {
               t.setSelected(false);
@@ -259,7 +260,7 @@ public class Main extends JPanel implements Runnable {
                 monkeyName.setText("");
                 upgrades.removeAll();
               }
-              ;
+
             }
           }
         }
@@ -281,10 +282,10 @@ public class Main extends JPanel implements Runnable {
 //    monkeyName.setOpaque(true);
 
     upgrades = new JPanel();
-    upgrades.setBounds(900, 230, 200, 300);
+    upgrades.setBounds(900, 225, 200, 310);
     upgrades.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
     upgrades.setOpaque(false);
-    upgrades.setLayout(new GridLayout(4, 1, 0, 5));
+    upgrades.setLayout(new GridLayout(5, 1, 0, 5));
 
     controls = new JPanel();
 

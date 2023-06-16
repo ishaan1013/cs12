@@ -7,6 +7,8 @@ import java.io.IOException;
 
 public class Upgrade {
 
+  private boolean disabled;
+  private boolean bought;
   private int cost;
   private String name;
 
@@ -29,13 +31,16 @@ public class Upgrade {
     this.camoChange = camoChange;
     this.leadChange = leadChange;
 
+    this.disabled = false;
+    this.bought = false;
+
     panel = new JPanel();
     JLabel nameLabel = new JLabel();
     JLabel infoLabel = new JLabel();
 
     panel.setLayout(new GridLayout(2, 1, 5, 5));
     panel.setBackground(new Color(87, 60, 43, 200));
-    panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
     try {
       smF = Font.createFont(Font.TRUETYPE_FONT, new File("assets/font/oetztype.ttf")).deriveFont(12f);
@@ -57,6 +62,14 @@ public class Upgrade {
     panel.add(nameLabel);
     panel.add(infoLabel);
 
+  }
+
+  public boolean getDisabled() {
+    return disabled;
+  }
+
+  public boolean getBought() {
+    return bought;
   }
 
   public int getCost() {

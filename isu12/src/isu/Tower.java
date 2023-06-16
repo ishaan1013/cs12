@@ -1,6 +1,9 @@
 package isu;
 
+import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public abstract class Tower {
@@ -12,10 +15,14 @@ public abstract class Tower {
 
   private int range;
   private int cost;
+  private int value;
+
+  private Font smF;
 
   private boolean selected;
 
   private ArrayList<Upgrade> upgrades;
+  private int upgrade;
 
   public Tower(int x, int y, int width, int height, String pathname, int range, int cost, ArrayList<Upgrade> upgrades) {
     this.x = x;
@@ -25,6 +32,7 @@ public abstract class Tower {
     this.pathname = pathname;
     this.range = range;
     this.cost = cost;
+    this.value = cost;
     this.upgrades = upgrades;
   }
 
@@ -61,12 +69,50 @@ public abstract class Tower {
     return cost;
   }
 
+  public int getSellPrice() {
+    return (int) (value * 0.5);
+  }
+
+  public JPanel getSellPanel() {
+    JPanel sellPanel = new JPanel();
+    sellPanel.setLayout(new GridLayout(2, 1, 5, 5));
+    sellPanel.setBackground(new Color(87, 60, 43, 200));
+    sellPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+    try {
+      smF = Font.createFont(Font.TRUETYPE_FONT, new File("assets/font/oetztype.ttf")).deriveFont(12f);
+      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+      ge.registerFont(smF);
+    } catch (IOException | FontFormatException e) {
+      e.printStackTrace();
+    }
+
+    JLabel sellLabel = new JLabel("Sell");
+    sellLabel.setFont(smF);
+    sellLabel.setForeground(Color.WHITE);
+
+    JLabel sellPrice = new JLabel();
+    sellPrice.setFont(smF);
+    sellPrice.setForeground(Color.RED.brighter());
+    sellPrice.setText("$" + getSellPrice());
+
+    sellPanel.add(sellLabel);
+    sellPanel.add(sellPrice);
+
+    return sellPanel;
+  }
+
   public boolean isSelected() {
     return selected;
   }
 
   public ArrayList<Upgrade> getUpgrades() {
     return upgrades;
+  }
+
+  public int getUpgrade() {
+    return this.upgrade;
   }
 
   public Rectangle getHitbox() {
