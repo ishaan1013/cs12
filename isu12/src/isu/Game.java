@@ -1,36 +1,40 @@
 package isu;
 
+import javax.swing.*;
 import java.util.*;
 import java.util.stream.*;
 
 public class Game {
 
-  private int map;
-  private int[] startPos;
-  private char[] dir;
-  private int[][] path;
-  private int[][] land;
-  private int[][] water;
+  private static int map;
+  private static int[] startPos;
+  private static char[] dir;
+  private static int[][] path;
+  private static int[][] land;
+  private static int[][] water;
 
-  private int hp;
-  private int money;
-  private int round;
+  private static int hp = 200;
+  private static int money = 800;
+  private static int round = 1;
 
-  private boolean pause;
-  private boolean spedUp;
+  private static boolean pause = true;
+  private static boolean spedUp = false;
 
-  private ArrayList<Tower> towers;
-  private ArrayList<Bloon> bloons;
-  private String placing;
-  private int selected;
+  private static ArrayList<Tower> towers = new ArrayList<>();
+  private static ArrayList<Bloon> bloons = new ArrayList<>();
+  private static String placing = null;
+  private static int selected;
 
-  public Game(int map) {
-    this.map = map;
+  // public here to revalidate in other classes & methods
+  public static JPanel upgrades;
+
+  public static void initGame(int map) {
+    Game.map = map;
 
     if (map == 0) {
-      this.startPos = new int[]{-1, 2};
-      this.dir = new char[]{'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'D', 'D', 'L', 'L', 'L', 'D', 'D', 'D', 'D', 'L', 'L', 'L', 'U', 'U', 'U', 'L', 'L', 'D', 'D', 'D', 'L', 'L', 'U', 'U', 'L', 'L', 'L', 'L'};
-      this.path = new int[][]{
+      Game.startPos = new int[]{-1, 2};
+      Game.dir = new char[]{'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'D', 'D', 'L', 'L', 'L', 'D', 'D', 'D', 'D', 'L', 'L', 'L', 'U', 'U', 'U', 'L', 'L', 'D', 'D', 'D', 'L', 'L', 'U', 'U', 'L', 'L', 'L', 'L'};
+      Game.path = new int[][]{
           {},
           {},
           {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
@@ -42,7 +46,7 @@ public class Game {
           {3, 4, 5, 7, 8, 9, 10},
           {}
       };
-      this.land = new int[][]{
+      Game.land = new int[][]{
           {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
           {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
           {14},
@@ -54,7 +58,7 @@ public class Game {
           {0, 1, 2, 6, 14},
           {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
       };
-      this.water = new int[][]{
+      Game.water = new int[][]{
           {},
           {},
           {},
@@ -67,10 +71,10 @@ public class Game {
           {}
       };
     } else {
-      this.startPos = new int[]{15, 1};
+      Game.startPos = new int[]{15, 1};
 
-      this.dir = new char[]{'L', 'L', 'L', 'L', 'D', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'D', 'D', 'D', 'D', 'D', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'U', 'U', 'U', 'R', 'R', 'D', 'D', 'D', 'R', 'R', 'U', 'U', 'U', 'R', 'R'};
-      this.path = new int[][]{
+      Game.dir = new char[]{'L', 'L', 'L', 'L', 'D', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'D', 'D', 'D', 'D', 'D', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'U', 'U', 'U', 'R', 'R', 'D', 'D', 'D', 'R', 'R', 'U', 'U', 'U', 'R', 'R'};
+      Game.path = new int[][]{
           {},
           {11, 12, 13, 14},
           {2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
@@ -82,7 +86,7 @@ public class Game {
           {},
           {}
       };
-      this.land = new int[][]{
+      Game.land = new int[][]{
           {10, 11, 12, 13, 14},
           {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
           {1, 12, 13, 14},
@@ -95,7 +99,7 @@ public class Game {
           {}
       };
 
-      this.water = new int[][]{
+      Game.water = new int[][]{
           {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
           {0},
           {0},
@@ -109,88 +113,80 @@ public class Game {
       };
     }
 
-    this.hp = 200;
-    this.money = 800;
-    this.round = 1;
-    this.pause = true;
-    this.spedUp = false;
-    this.towers = new ArrayList<Tower>();
-    this.bloons = new ArrayList<Bloon>();
-    this.placing = null;
   }
 
-  public int getHp() {
+  public static int getHp() {
     return hp;
   }
 
-  public int getMoney() {
+  public static int getMoney() {
     return money;
   }
 
-  public int getRound() {
+  public static int getRound() {
     return round;
   }
 
-  public boolean getPause() {
+  public static boolean getPause() {
     return pause;
   }
 
-  public boolean getSpedUp() {
+  public static boolean getSpedUp() {
     return spedUp;
   }
 
-  public ArrayList<Tower> getTowers() {
+  public static ArrayList<Tower> getTowers() {
     return towers;
   }
 
-  public ArrayList<Bloon> getBloons() {
+  public static ArrayList<Bloon> getBloons() {
     return bloons;
   }
 
-  public String getPlacing() {
+  public static String getPlacing() {
     return placing;
   }
 
-  public void lose(int hp) {
-    this.hp -= hp;
+  public static void lose(int hp) {
+    Game.hp -= hp;
   }
 
-  public void setMoney(int money) {
-    this.money = money;
+  public static void setMoney(int money) {
+    Game.money = money;
   }
 
-  public void setRound(int round) {
-    this.round = round;
+  public static void setRound(int round) {
+    Game.round = round;
   }
 
-  public boolean pauseResume() {
-    this.pause = !this.pause;
-    return this.pause;
+  public static boolean pauseResume() {
+    Game.pause = !Game.pause;
+    return Game.pause;
     // return the new state
   }
 
-  public boolean speedChange() {
-    this.spedUp = !this.spedUp;
-    return this.spedUp;
+  public static boolean speedChange() {
+    Game.spedUp = !Game.spedUp;
+    return Game.spedUp;
   }
 
-  public void addTower(Tower t) {
-    this.towers.add(t);
+  public static void addTower(Tower t) {
+    Game.towers.add(t);
   }
 
-  public void removeTower(Tower t) {
-    this.towers.remove(t);
+  public static void removeTower(Tower t) {
+    Game.towers.remove(t);
   }
 
-  public void setBloons(ArrayList<Bloon> bloons) {
-    this.bloons = bloons;
+  public static void setBloons(ArrayList<Bloon> bloons) {
+    Game.bloons = bloons;
   }
 
-  public void setPlacing(String placing) {
-    this.placing = placing;
+  public static void setPlacing(String placing) {
+    Game.placing = placing;
   }
 
-  public boolean isCoordValid(int x, int y, int width, boolean water) {
+  public static boolean isCoordValid(int x, int y, int width, boolean water) {
     // 40x40 hitbox for 70 (monkeys)
     // 48x48  hitbox for 80/85 (buc & others)
     int offset;
@@ -209,7 +205,7 @@ public class Game {
 
 
     // check tower collisions
-    for (Tower t : this.towers) {
+    for (Tower t : Game.towers) {
       boolean collisionX = (x < t.getX() + (offset * 2) && x >= t.getX()) || (x > t.getX() - (offset * 2) && x <= t.getX());
       boolean collisionY = (y < t.getY() + (offset * 2) && y >= t.getY()) || (y > t.getY() - (offset * 2) && y <= t.getY());
 
@@ -238,53 +234,57 @@ public class Game {
     }
 
     // check if it's on a path
-    if (IntStream.of(this.path[row]).anyMatch(c -> c == col)) return false;
+    if (IntStream.of(Game.path[row]).anyMatch(c -> c == col)) return false;
 
     // check if it's on the correct terrain
     if (water) {
-      if (IntStream.of(this.land[row]).anyMatch(c -> c == col)) return false;
+      if (IntStream.of(Game.land[row]).anyMatch(c -> c == col)) return false;
     } else {
-      if (IntStream.of(this.water[row]).anyMatch(c -> c == col)) return false;
+      if (IntStream.of(Game.water[row]).anyMatch(c -> c == col)) return false;
     }
 
     // if monkey is on an edge
     if (water) {
       if (top) {
-        if (IntStream.of(this.path[row - 1]).anyMatch(c -> c == col)) return false;
-        if (IntStream.of(this.land[row - 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.path[row - 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.land[row - 1]).anyMatch(c -> c == col)) return false;
       }
       if (bottom) {
-        if (IntStream.of(this.path[row + 1]).anyMatch(c -> c == col)) return false;
-        if (IntStream.of(this.land[row + 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.path[row + 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.land[row + 1]).anyMatch(c -> c == col)) return false;
       }
       if (left) {
-        if (IntStream.of(this.path[row]).anyMatch(c -> c == col - 1)) return false;
-        if (IntStream.of(this.land[row]).anyMatch(c -> c == col - 1)) return false;
+        if (IntStream.of(Game.path[row]).anyMatch(c -> c == col - 1)) return false;
+        if (IntStream.of(Game.land[row]).anyMatch(c -> c == col - 1)) return false;
       }
       if (right) {
-        if (IntStream.of(this.path[row]).anyMatch(c -> c == col + 1)) return false;
-        if (IntStream.of(this.land[row]).anyMatch(c -> c == col + 1)) return false;
+        if (IntStream.of(Game.path[row]).anyMatch(c -> c == col + 1)) return false;
+        if (IntStream.of(Game.land[row]).anyMatch(c -> c == col + 1)) return false;
       }
     } else {
       if (top) {
-        if (IntStream.of(this.path[row - 1]).anyMatch(c -> c == col)) return false;
-        if (IntStream.of(this.water[row - 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.path[row - 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.water[row - 1]).anyMatch(c -> c == col)) return false;
       }
       if (bottom) {
-        if (IntStream.of(this.path[row + 1]).anyMatch(c -> c == col)) return false;
-        if (IntStream.of(this.water[row + 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.path[row + 1]).anyMatch(c -> c == col)) return false;
+        if (IntStream.of(Game.water[row + 1]).anyMatch(c -> c == col)) return false;
       }
       if (left) {
-        if (IntStream.of(this.path[row]).anyMatch(c -> c == col - 1)) return false;
-        if (IntStream.of(this.water[row]).anyMatch(c -> c == col - 1)) return false;
+        if (IntStream.of(Game.path[row]).anyMatch(c -> c == col - 1)) return false;
+        if (IntStream.of(Game.water[row]).anyMatch(c -> c == col - 1)) return false;
       }
       if (right) {
-        if (IntStream.of(this.path[row]).anyMatch(c -> c == col + 1)) return false;
-        if (IntStream.of(this.water[row]).anyMatch(c -> c == col + 1)) return false;
+        if (IntStream.of(Game.path[row]).anyMatch(c -> c == col + 1)) return false;
+        if (IntStream.of(Game.water[row]).anyMatch(c -> c == col + 1)) return false;
       }
     }
 
     return true;
-
   }
+
+  public static void setHp(int hp) {
+    Game.hp = hp;
+  }
+
 }

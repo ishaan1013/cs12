@@ -2,13 +2,19 @@ package isu;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 
 public class Upgrade {
 
+  private String towerID;
+
   private boolean disabled;
   private boolean bought;
+  //  private int index;
   private int cost;
   private String name;
 
@@ -18,11 +24,17 @@ public class Upgrade {
   private boolean camoChange;
   private boolean leadChange;
 
+  private MouseListener ml;
+
   private JPanel panel;
+  private JLabel nameLabel, infoLabel;
 
   private Font smF;
 
-  public Upgrade(int cost, String name, String category, int fireRateChange, int damageChange, int rangeChange, boolean camoChange, boolean leadChange) {
+  public Upgrade(String id, int index, boolean disabled, int cost, String name, String category, int fireRateChange, int damageChange, int rangeChange, boolean camoChange, boolean leadChange) {
+
+    this.towerID = id;
+//    this.index = index;
     this.cost = cost;
     this.name = name;
     this.fireRateChange = fireRateChange;
@@ -31,16 +43,32 @@ public class Upgrade {
     this.camoChange = camoChange;
     this.leadChange = leadChange;
 
-    this.disabled = false;
+    this.disabled = disabled;
     this.bought = false;
 
     panel = new JPanel();
-    JLabel nameLabel = new JLabel();
-    JLabel infoLabel = new JLabel();
+    nameLabel = new JLabel();
+    infoLabel = new JLabel();
 
     panel.setLayout(new GridLayout(2, 1, 5, 5));
     panel.setBackground(new Color(87, 60, 43, 200));
     panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+    this.ml = new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        System.out.println("Clicked " + name + " upgrade");
+
+        for (Tower t : Game.getTowers()) {
+//            System.out.println(t.getID() + " " + towerID);
+          if (t.getID().equals(towerID)) {
+            System.out.println("upgrading...");
+            t.upgrade();
+            return;
+          }
+        }
+        System.out.println("no matching tower found.");
+      }
+    };
 
     try {
       smF = Font.createFont(Font.TRUETYPE_FONT, new File("assets/font/oetztype.ttf")).deriveFont(12f);
@@ -52,11 +80,9 @@ public class Upgrade {
     }
 
     nameLabel.setFont(smF);
-    nameLabel.setForeground(Color.WHITE);
     nameLabel.setText(name);
 
     infoLabel.setFont(smF);
-    infoLabel.setForeground(Color.YELLOW);
     infoLabel.setText("$" + cost + " - " + category);
 
     panel.add(nameLabel);
@@ -64,12 +90,24 @@ public class Upgrade {
 
   }
 
-  public boolean getDisabled() {
+  public String getTowerID() {
+    return towerID;
+  }
+
+  public boolean isDisabled() {
     return disabled;
   }
 
-  public boolean getBought() {
+  public boolean isBought() {
     return bought;
+  }
+
+  public void enable() {
+    disabled = false;
+  }
+
+  public void buy() {
+    bought = true;
   }
 
   public int getCost() {
@@ -101,6 +139,28 @@ public class Upgrade {
   }
 
   public JPanel getPanel() {
+    if (disabled) {
+      panel.setBackground(new Color(56, 41, 31, 200));
+      nameLabel.setForeground(Color.GRAY);
+      infoLabel.setForeground(Color.GRAY);
+      System.out.println(name + " is disabled");
+    } else if (bought) {
+      panel.setBackground(new Color(56, 41, 31, 200));
+      nameLabel.setForeground(Color.GREEN.brighter());
+      infoLabel.setForeground(Color.GRAY);
+      panel.removeMouseListener(ml);
+
+      System.out.println(name + " is bought");
+    } else {
+      nameLabel.setForeground(Color.WHITE);
+      infoLabel.setForeground(Color.YELLOW);
+      panel.setBackground(new Color(87, 60, 43, 200));
+
+      panel.addMouseListener(ml);
+
+      System.out.println(name + " is enabled");
+    }
+
     return panel;
   }
 

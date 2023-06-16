@@ -4,9 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 public abstract class Tower {
+
+  private String id;
+
   private int x;
   private int y;
   private int width;
@@ -17,6 +20,14 @@ public abstract class Tower {
   private int cost;
   private int value;
 
+  private int pops;
+  private boolean camo;
+  private boolean lead;
+
+  private Projectile projectile;
+  private int fireRate;
+  private int damage;
+
   private Font smF;
 
   private boolean selected;
@@ -24,7 +35,7 @@ public abstract class Tower {
   private ArrayList<Upgrade> upgrades;
   private int upgrade;
 
-  public Tower(int x, int y, int width, int height, String pathname, int range, int cost, ArrayList<Upgrade> upgrades) {
+  public Tower(int x, int y, int width, int height, String pathname, int range, int cost, ArrayList<Upgrade> upgrades, boolean camo, boolean lead, Projectile projectile, int fireRate, int damage) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -34,6 +45,64 @@ public abstract class Tower {
     this.cost = cost;
     this.value = cost;
     this.upgrades = upgrades;
+    this.upgrade = -1;
+
+    this.pops = 0;
+    this.camo = camo;
+    this.lead = lead;
+    this.projectile = projectile;
+  }
+
+  public void upgrade() {
+    System.out.println("Upgrading " + getName() + " to " + upgrades.get(upgrade + 1).getName());
+    Upgrade upg = upgrades.get(upgrade + 1);
+
+//      int currentMoney = Game.getMoney();
+
+//      if (upg.getCost() > Game.getMoney()) {
+//        return;
+//      }
+    upg.buy();
+    upgrade++;
+
+    if (upgrade < 3) {
+
+      Upgrade nextUpg = upgrades.get(upgrade + 1);
+      nextUpg.enable();
+    }
+
+//      Game.setMoney(currentMoney - upg.getCost());
+
+    fireRate += upg.getFireRateChange();
+    damage += upg.getDamageChange();
+    range += upg.getRangeChange();
+    if (upg.getCamoChange()) {
+      camo = true;
+    }
+    if (upg.getLeadChange()) {
+      lead = true;
+    }
+
+    Game.upgrades.removeAll();
+    for (int i = 0; i < 4; i++) {
+      Game.upgrades.add(upgrades.get(i).getPanel());
+    }
+
+    Game.upgrades.add(this.getSellPanel());
+    Game.upgrades.revalidate();
+  }
+
+  public void sell() {
+    Game.setMoney(Game.getMoney() + getSellPrice());
+    Game.removeTower(this);
+  }
+
+  public String getID() {
+    return id;
+  }
+
+  public void setID(String id) {
+    this.id = id;
   }
 
   public int getX() {
@@ -159,11 +228,58 @@ public abstract class Tower {
   public void setSelected(boolean selected) {
     this.selected = selected;
 
-    System.out.println("selected: " + this.selected + " for " + this.pathname);
   }
 
   public void setUpgrades(ArrayList<Upgrade> upgrades) {
     this.upgrades = upgrades;
+  }
+
+  public int getPops() {
+    return pops;
+  }
+
+  public boolean getCamo() {
+    return camo;
+  }
+
+  public boolean getLead() {
+    return lead;
+  }
+
+  public Projectile getProjectile() {
+    return projectile;
+  }
+
+  public int getFireRate() {
+    return fireRate;
+  }
+
+  public int getDamage() {
+    return damage;
+  }
+
+  public void setPops(int pops) {
+    this.pops = pops;
+  }
+
+  public void setCamo(boolean camo) {
+    this.camo = camo;
+  }
+
+  public void setLead(boolean lead) {
+    this.lead = lead;
+  }
+
+  public void setProjectile(Projectile projectile) {
+    this.projectile = projectile;
+  }
+
+  public void setFireRate(int fireRate) {
+    this.fireRate = fireRate;
+  }
+
+  public void setDamage(int damage) {
+    this.damage = damage;
   }
 
 }

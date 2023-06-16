@@ -26,13 +26,11 @@ public class Main extends JPanel implements Runnable {
 
   Thread thread;
 
-  Game game;
-
   int mouseX = -1;
   int mouseY = -1;
 
   JLabel monkeyName;
-  JPanel upgrades, controls;
+  JPanel controls;
   JLabel pauseL, playL, speedL, speed2L, exitL;
   ArrayList<JPanel> upgradePanels;
 
@@ -50,7 +48,6 @@ public class Main extends JPanel implements Runnable {
   }
 
   public void run() {
-    System.out.println("Thread: Initializing game");
     startTime = System.currentTimeMillis();
     timeElapsed = 0;
     for (int i = 0; i < 100000; i++) {
@@ -58,7 +55,6 @@ public class Main extends JPanel implements Runnable {
       String s = "set up stuff blah blah blah";
       s.toUpperCase();
     }
-    System.out.println("Thread: Done initializing game");
 
     while (true) {
       update();
@@ -228,7 +224,7 @@ public class Main extends JPanel implements Runnable {
 
   public void initGame(int map) throws IOException {
 
-    game = new Game(map);
+    Game.initGame(map);
 
     gamePanel = new JPanel();
     gamePanel.setBounds(0, 0, 1100, 600);
@@ -236,29 +232,29 @@ public class Main extends JPanel implements Runnable {
     gamePanel.setLayout(null);
     gamePanel.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-        if (game.getPlacing() != null) {
+        if (Game.getPlacing() != null) {
           mouseX = e.getX();
           mouseY = e.getY();
-        } else {
+        } else if (e.getX() <= 900) {
           boolean oneSelected = false;
-          for (Tower t : game.getTowers()) {
+          for (Tower t : Game.getTowers()) {
             if (t.getHitbox().contains(e.getPoint())) {
               t.setSelected(true);
               oneSelected = true;
               monkeyName.setText(t.getName());
               ArrayList<Upgrade> upgradesList = t.getUpgrades();
-              upgrades.removeAll();
+              Game.upgrades.removeAll();
               for (Upgrade u : upgradesList) {
-                upgrades.add(u.getPanel());
+                Game.upgrades.add(u.getPanel());
               }
-              upgrades.add(t.getSellPanel());
+              Game.upgrades.add(t.getSellPanel());
 
-              upgrades.revalidate();
+              Game.upgrades.revalidate();
             } else {
               t.setSelected(false);
               if (!oneSelected) {
                 monkeyName.setText("");
-                upgrades.removeAll();
+                Game.upgrades.removeAll();
               }
 
             }
@@ -281,11 +277,11 @@ public class Main extends JPanel implements Runnable {
     monkeyName.setBounds(915, 200, 170, 50);
 //    monkeyName.setOpaque(true);
 
-    upgrades = new JPanel();
-    upgrades.setBounds(900, 225, 200, 310);
-    upgrades.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-    upgrades.setOpaque(false);
-    upgrades.setLayout(new GridLayout(5, 1, 0, 5));
+    Game.upgrades = new JPanel();
+    Game.upgrades.setBounds(900, 225, 200, 310);
+    Game.upgrades.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+    Game.upgrades.setOpaque(false);
+    Game.upgrades.setLayout(new GridLayout(5, 1, 0, 5));
 
     controls = new JPanel();
 
@@ -305,8 +301,8 @@ public class Main extends JPanel implements Runnable {
       int finalI = i;
       monkeyLabel.addMouseListener(new MouseAdapter() {
         public void mouseClicked(MouseEvent e) {
-          if (game.getPlacing() == null) game.setPlacing(monkeyIcons[finalI]);
-          else game.setPlacing(null);
+          if (Game.getPlacing() == null) Game.setPlacing(monkeyIcons[finalI]);
+          else Game.setPlacing(null);
         }
       });
       monkeys.add(monkeyLabel);
@@ -318,7 +314,7 @@ public class Main extends JPanel implements Runnable {
 
     gamePanel.add(monkeys);
     gamePanel.add(monkeyName);
-    gamePanel.add(upgrades);
+    gamePanel.add(Game.upgrades);
     gamePanel.add(controls);
 
     add(gamePanel);
@@ -342,7 +338,7 @@ public class Main extends JPanel implements Runnable {
         controls.removeAll();
         controls.add(playL);
 
-        if (game.getSpedUp()) {
+        if (Game.getSpedUp()) {
           controls.add(speed2L);
         } else {
           controls.add(speedL);
@@ -351,7 +347,7 @@ public class Main extends JPanel implements Runnable {
 
         controls.revalidate();
 
-        game.pauseResume();
+        Game.pauseResume();
       }
     });
     playL.addMouseListener(new MouseAdapter() {
@@ -359,7 +355,7 @@ public class Main extends JPanel implements Runnable {
         controls.removeAll();
         controls.add(pauseL);
 
-        if (game.getSpedUp()) {
+        if (Game.getSpedUp()) {
           controls.add(speed2L);
         } else {
           controls.add(speedL);
@@ -368,14 +364,14 @@ public class Main extends JPanel implements Runnable {
 
         controls.revalidate();
 
-        game.pauseResume();
+        Game.pauseResume();
       }
     });
     speedL.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         controls.removeAll();
 
-        if (game.getPause()) {
+        if (Game.getPause()) {
           controls.add(playL);
         } else {
           controls.add(pauseL);
@@ -386,14 +382,14 @@ public class Main extends JPanel implements Runnable {
 
         controls.revalidate();
 
-        game.speedChange();
+        Game.speedChange();
       }
     });
     speed2L.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         controls.removeAll();
 
-        if (game.getPause()) {
+        if (Game.getPause()) {
           controls.add(playL);
         } else {
           controls.add(pauseL);
@@ -404,7 +400,7 @@ public class Main extends JPanel implements Runnable {
 
         controls.revalidate();
 
-        game.speedChange();
+        Game.speedChange();
       }
     });
     exitL.addMouseListener(new MouseAdapter() {
@@ -464,7 +460,7 @@ public class Main extends JPanel implements Runnable {
       double fps = (Math.round(((double) frameCount / ((double) timeElapsed / 1000)) * 100)) / 100.0;
       g.drawString("FPS: " + String.format("%.2f", fps), 905, 585);
 
-      for (Tower t : game.getTowers()) {
+      for (Tower t : Game.getTowers()) {
         try {
           BufferedImage towerBI = ImageIO.read(new File(t.getPathname() + "1.png"));
           if (t.isSelected()) {
@@ -481,37 +477,36 @@ public class Main extends JPanel implements Runnable {
 
       }
 
-      if (game.getPlacing() != null) {
+      if (Game.getPlacing() != null) {
 //        g.drawString("X: " + mouseX, 905, 555);
 //        g.drawString("Y: " + mouseY, 905, 570);
         g.drawString("Adding...", 905, 570);
 
         if (mouseX != -1 && mouseY != -1) {
 //          System.out.println("Added monkey at " + mouseX + ", " + mouseY);
-          String placing = game.getPlacing();
+          String placing = Game.getPlacing();
           if (placing.equals("dart") || placing.equals("ninja") || placing.equals("super")) {
 
-            if (game.isCoordValid(mouseX, mouseY, 70, false)) {
+            if (Game.isCoordValid(mouseX, mouseY, 70, false)) {
               switch (placing) {
-                case "dart" -> game.addTower(new DartM(mouseX, mouseY));
-                case "ninja" -> game.addTower(new NinjaM(mouseX, mouseY));
-                case "super" -> game.addTower(new SuperM(mouseX, mouseY));
+                case "dart" -> Game.addTower(new DartM(mouseX, mouseY));
+                case "ninja" -> Game.addTower(new NinjaM(mouseX, mouseY));
+                case "super" -> Game.addTower(new SuperM(mouseX, mouseY));
               }
               System.out.println(placing + " - added land at " + mouseX + ", " + mouseY);
             } else {
               System.out.println(placing + " - invalid placement " + mouseX + ", " + mouseY);
             }
           } else {
-            if (game.isCoordValid(mouseX, mouseY, 85, true)) {
-              game.addTower(new BucM(mouseX, mouseY));
+            if (Game.isCoordValid(mouseX, mouseY, 85, true)) {
+              Game.addTower(new BucM(mouseX, mouseY));
               System.out.println(placing + " - added buc at " + mouseX + ", " + mouseY);
             } else {
               System.out.println(placing + " - invalid placement " + mouseX + ", " + mouseY);
             }
           }
 
-
-          game.setPlacing(null);
+          Game.setPlacing(null);
           mouseX = -1;
           mouseY = -1;
         }
