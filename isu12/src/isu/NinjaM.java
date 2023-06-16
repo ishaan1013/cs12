@@ -17,7 +17,7 @@ public class NinjaM extends Tower {
     String id = UUID.randomUUID().toString();
 
     upg.add(new Upgrade(id, 0, false, 300, "Ninja Speed", "Fire Rate", 1, 0, 0, false, false));
-    upg.add(new Upgrade(id, 1, true, 600, "Enhanced Vision", "Range", 0, 0, 30, false, false));
+    upg.add(new Upgrade(id, 1, true, 600, "Enhanced Vision", "Range", 0, 0, 45, false, false));
     upg.add(new Upgrade(id, 2, true, 900, "Hot Shurikens", "Damage/Lead", 0, 1, 0, false, true));
     upg.add(new Upgrade(id, 3, true, 2000, "Bloonjitsu", "Max", 1, 8, 0, false, false));
 

@@ -17,8 +17,8 @@ public class BucM extends Tower {
     String id = UUID.randomUUID().toString();
 
     upg.add(new Upgrade(id, 0, false, 200, "Sharp Darts", "Damage", 0, 1, 0, false, false));
-    upg.add(new Upgrade(id, 1, true, 400, "Radar", "Range/Camo", 0, 0, 30, true, false));
-    upg.add(new Upgrade(id, 2, true, 600, "Rapid Fire", "Fire Rate", 1, 0, 0, false, false));
+    upg.add(new Upgrade(id, 1, true, 500, "Radar", "Range/Camo", 0, 0, 45, true, false));
+    upg.add(new Upgrade(id, 2, true, 800, "Rapid Fire", "Fire Rate", 1, 0, 0, false, false));
     upg.add(new Upgrade(id, 3, true, 1500, "Battleship", "Max", 0, 6, 0, false, true));
 
     this.setUpgrades(upg);

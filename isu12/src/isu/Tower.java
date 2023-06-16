@@ -62,6 +62,7 @@ public abstract class Tower {
 //      if (upg.getCost() > Game.getMoney()) {
 //        return;
 //      }
+
     upg.buy();
     upgrade++;
 
@@ -72,6 +73,7 @@ public abstract class Tower {
     }
 
 //      Game.setMoney(currentMoney - upg.getCost());
+    value += upg.getCost();
 
     fireRate += upg.getFireRateChange();
     damage += upg.getDamageChange();
